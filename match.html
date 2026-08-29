@@ -1,51 +1,135 @@
-<script type="module">
-    import { db, auth, ref, set, onValue, remove, getMyUID, onAuthStateChanged } from './config.js';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching... | VIBE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; overflow: hidden; }
+        
+        /* Cinematic Radar Animation */
+        .radar-pulse {
+            position: absolute;
+            border: 2px solid #6366f1;
+            border-radius: 50%;
+            animation: pulse 4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+            opacity: 0;
+        }
+        @keyframes pulse {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 500px; height: 500px; opacity: 0; }
+        }
+        .pulse-delay-1 { animation-delay: 1s; }
+        .pulse-delay-2 { animation-delay: 2s; }
+        
+        .floating-tag {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
 
-    onAuthStateChanged(auth, (user) => {
-        const myUID = user ? user.uid : getMyUID();
+    <!-- Background Orbs (matching your landing page style) -->
+    <div class="fixed top-0 left-0 w-full h-full -z-10 opacity-30">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-600 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600 rounded-full blur-[100px]"></div>
+    </div>
+
+    <!-- RADAR VISUAL -->
+    <div class="relative flex items-center justify-center w-64 h-64 mb-12">
+        <div class="radar-pulse"></div>
+        <div class="radar-pulse pulse-delay-1"></div>
+        <div class="radar-pulse pulse-delay-2"></div>
+        
+        <div class="relative z-10 w-24 h-24 bg-indigo-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-indigo-500/50 border border-white/20">
+            <i data-lucide="compass" class="w-12 h-12 text-white animate-spin [animation-duration:5s]"></i>
+        </div>
+    </div>
+
+    <!-- TEXT STATUS -->
+    <div class="text-center z-20">
+        <h2 id="status-text" class="text-3xl font-black italic uppercase tracking-tighter mb-2">Scanning...</h2>
+        <p class="text-indigo-400 text-[10px] font-bold uppercase tracking-[0.4em] animate-pulse">Finding your wavelength</p>
+    </div>
+
+    <!-- USER INTERESTS PREVIEW -->
+    <div id="searching-with" class="mt-12 flex flex-wrap justify-center gap-2 max-w-sm">
+        <!-- Tags will be injected here -->
+    </div>
+
+    <!-- CANCEL BUTTON -->
+    <button onclick="location.href='index.html'" class="fixed bottom-12 text-slate-500 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">
+        Cancel Search
+    </button>
+
+    <script type="module">
+        import { db, auth, ref, set, onValue, remove, getMyUID, onAuthStateChanged } from './config.js';
+
+        // 1. UI Feedback Logic
+        const statusText = document.getElementById('status-text');
+        const statuses = ["Scanning...", "Analyzing Vibes...", "Matching Interests...", "Connecting..."];
+        let statusIdx = 0;
+        setInterval(() => {
+            statusIdx = (statusIdx + 1) % statuses.length;
+            statusText.innerText = statuses[statusIdx];
+        }, 2000);
+
+        // 2. Load Interests into UI
         const interests = JSON.parse(localStorage.getItem('vibe_interests')) || ["General"];
-        const prefs = JSON.parse(localStorage.getItem('vibe_prefs')) || {style: 'Anything'};
+        const tagContainer = document.getElementById('searching-with');
+        tagContainer.innerHTML = interests.map(t => 
+            `<span class="floating-tag bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-tight">${t}</span>`
+        ).join('');
 
-        // 1. Join Lobby
-        const lobbyRef = ref(db, 'lobby/' + myUID);
-        set(lobbyRef, { id: myUID, interests, prefs, time: Date.now() });
+        // 3. ACTUAL MATCHING LOGIC
+        onAuthStateChanged(auth, (user) => {
+            const myUID = user ? user.uid : getMyUID();
+            const prefs = JSON.parse(localStorage.getItem('vibe_prefs')) || {style: 'Anything'};
 
-        // 2. Listen for matches assigned to me (Joiner Path)
-        onValue(ref(db, `lobby/${myUID}/match`), (snap) => {
-            const data = snap.val();
-            if(data) {
-                // Clear lobby and go to chat
-                remove(ref(db, 'lobby/' + myUID));
-                window.location.href = `chat.html?room=${data.roomId}&peer=${data.peerUID}`;
-            }
-        });
+            // A. Join Lobby
+            const lobbyRef = ref(db, 'lobby/' + myUID);
+            set(lobbyRef, { id: myUID, interests, prefs, time: Date.now() });
 
-        // 3. Scan lobby to find others (Creator Path)
-        onValue(ref(db, 'lobby'), (snap) => {
-            const users = snap.val();
-            if(!users) return;
-            Object.keys(users).forEach(peerId => {
-                if(peerId === myUID) return;
-                const peer = users[peerId];
-                if (peer.match) return; // Already matched
-
-                const common = peer.interests.filter(i => interests.includes(i));
-                if(common.length > 0) {
-                    const roomId = [myUID, peerId].sort().join('_');
-                    
-                    // Tell the Peer they matched with ME
-                    set(ref(db, `lobby/${peerId}/match`), { 
-                        roomId: roomId, 
-                        peerUID: myUID 
-                    });
-
-                    // Tell MYSELF I matched with THEM
-                    set(ref(db, `lobby/${myUID}/match`), { 
-                        roomId: roomId, 
-                        peerUID: peerId 
-                    });
+            // B. Listen for matches assigned to me (Joiner Path)
+            onValue(ref(db, `lobby/${myUID}/match`), (snap) => {
+                const data = snap.val();
+                if(data) {
+                    remove(ref(db, 'lobby/' + myUID)); // Leave lobby
+                    window.location.href = `chat.html?room=${data.roomId}&peer=${data.peerUID}`;
                 }
             });
+
+            // C. Scan lobby to find others (Creator Path)
+            onValue(ref(db, 'lobby'), (snap) => {
+                const users = snap.val();
+                if(!users) return;
+                
+                Object.keys(users).forEach(peerId => {
+                    if(peerId === myUID) return;
+                    const peer = users[peerId];
+                    if (peer.match) return; // Ignore if they are already being matched
+
+                    // Logic: Match if at least 1 interest overlaps
+                    const common = peer.interests.filter(i => interests.includes(i));
+                    if(common.length > 0) {
+                        const roomId = [myUID, peerId].sort().join('_');
+                        
+                        // Handshake: Assign same Room ID to both users
+                        set(ref(db, `lobby/${peerId}/match`), { roomId: roomId, peerUID: myUID });
+                        set(ref(db, `lobby/${myUID}/match`), { roomId: roomId, peerUID: peerId });
+                    }
+                });
+            });
         });
-    });
-</script>
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
