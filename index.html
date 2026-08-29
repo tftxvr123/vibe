@@ -44,7 +44,7 @@
             <span class="text-lg font-bold tracking-tighter uppercase italic text-white">VIBE</span>
         </div>
         <div class="flex items-center gap-4">
-            <button onclick="showScreen('rooms')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-400">Rooms</button>
+            <button onclick="showScreen('rooms')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-400 transition-colors">Rooms</button>
             <div class="flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
                 <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span>
                 <span id="live-counter" class="text-[9px] font-bold uppercase tracking-widest text-slate-400">2,410 Live</span>
@@ -66,9 +66,9 @@
                         <h4 class="font-bold text-xs uppercase mb-1">Married & Curious</h4>
                         <p class="text-[9px] text-indigo-400 font-bold">1.2k Online</p>
                     </div>
-                    <div class="bento-card" onclick="enterRoom('Couples')">
-                        <h4 class="font-bold text-xs uppercase mb-1">Couples</h4>
-                        <p class="text-[9px] text-slate-500">840 Online</p>
+                    <div class="bento-card" onclick="enterRoom('Relationship Advice')">
+                        <h4 class="font-bold text-xs uppercase mb-1">Advice</h4>
+                        <p class="text-[9px] text-slate-500">2.4k Active</p>
                     </div>
                     <div class="bento-card" onclick="showScreen('rooms')">
                         <h4 class="font-bold text-xs uppercase mb-1">More Rooms</h4>
@@ -95,14 +95,14 @@
         <div class="max-w-2xl mx-auto w-full">
             <div class="flex items-center justify-between mb-8">
                 <button onclick="showScreen('rooms')" class="text-slate-500"><i data-lucide="chevron-left"></i></button>
-                <h2 id="current-room-name" class="text-xl font-black uppercase italic text-indigo-500">Room Name</h2>
+                <h2 id="current-room-name" class="text-xl font-black uppercase italic text-indigo-500 tracking-tight">Room Name</h2>
                 <button onclick="openCreatePost()" class="bg-indigo-600 p-2 rounded-xl text-white shadow-lg"><i data-lucide="plus" class="w-5 h-5"></i></button>
             </div>
             <div id="posts-container" class="space-y-4"></div>
         </div>
     </section>
 
-    <!-- UPGRADED CREATE POST MODAL (FEATURE 10) -->
+    <!-- POST COMPOSER MODAL -->
     <div id="post-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-6">
         <div class="glass-card p-8 w-full max-w-md border-indigo-500/30">
             <div class="flex items-center gap-2 mb-2 text-indigo-400">
@@ -110,17 +110,15 @@
                 <span class="text-[9px] font-black uppercase tracking-[0.2em]">Conversation Spark</span>
             </div>
             <h3 id="room-prompt" class="text-lg font-bold italic leading-snug mb-6 text-white">...</h3>
-            
             <textarea id="post-text" placeholder="Share your thoughts..." class="w-full h-40 bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white text-sm mb-6 focus:border-indigo-500 transition-all"></textarea>
-            
             <div class="flex gap-3">
                 <button onclick="closeCreatePost()" class="flex-1 bg-white/5 p-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-slate-400">Cancel</button>
-                <button onclick="submitPost()" class="flex-1 bg-indigo-600 p-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-white shadow-lg shadow-indigo-500/20">Post</button>
+                <button onclick="submitPost()" class="flex-1 bg-indigo-600 p-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-white shadow-lg">Post</button>
             </div>
         </div>
     </div>
 
-    <!-- SCREEN 2: INTERESTS -->
+    <!-- PRESERVED SCREENS: INTERESTS, PREFS, MATCHING, CHAT -->
     <section id="interests" class="screen pt-28 px-6 items-center">
         <div class="max-w-md w-full">
             <div class="flex items-center gap-4 mb-8 justify-center">
@@ -135,7 +133,6 @@
         </div>
     </section>
 
-    <!-- SCREEN 3: PREFERENCES -->
     <section id="preferences" class="screen pt-28 px-6 items-center pb-20">
         <div class="max-w-md w-full space-y-6">
             <div class="flex items-center gap-4 mb-4 justify-center">
@@ -161,7 +158,6 @@
         </div>
     </section>
 
-    <!-- (PRESERVED) SCREEN 4 & 5: MATCHING & CHAT (OMITTED FROM VIEW FOR BREVITY, REMAINS IN SCRIPT) -->
     <section id="matching" class="screen items-center justify-center bg-black text-center p-6">
         <div class="relative w-56 h-56 flex items-center justify-center mb-12">
             <div class="absolute inset-0 border border-indigo-500/20 rounded-full radar-spin"></div>
@@ -215,12 +211,36 @@
             'Relationship Advice', 'Experiences', 'Questions & Discussions'
         ];
 
+        // FUN RELEVANT TEST DATA (FEATURE 10 ENHANCEMENT)
+        const MOCK_ROOM_DATA = {
+            'Married & Curious': [
+                { text: "Why is it that my husband's best friend is starting to look so attractive lately? Is this just a phase or something more?", likes: 42 },
+                { text: "Is there a safe way to explore curiosity without breaking trust? New to this and looking for real perspectives.", likes: 18 }
+            ],
+            'Couples': [
+                { text: "We tried a lifestyle club for the first time last weekend in Mumbai. Totally different than what we expected!", likes: 56 },
+                { text: "Logistics check: How do you guys manage 'date nights' when you have a shared social circle?", likes: 23 }
+            ],
+            'Relationship Advice': [
+                { text: "How do you handle it when you want deep talks but your partner just wants casual vibes all the time?", likes: 89 },
+                { text: "When is the right time to reveal your more 'adventurous' side to someone you just met?", likes: 31 }
+            ],
+            'Experiences': [
+                { text: "Met someone on Vibe from Kochi today and we talked for 4 hours about Malayalam cinema and life. Best match yet.", likes: 112 }
+            ],
+            'Fantasy & Roleplay': [
+                { text: "If you could live one day as someone else entirely, who would you be and what's the first thing you'd do?", likes: 67 }
+            ],
+            'default': [
+                { text: "Does anyone else feel like the best conversations happen after midnight?", likes: 12 }
+            ]
+        };
+
         const ROOM_PROMPTS = {
             'Married & Curious': "What are you curious about but haven't talked about openly?",
             'Relationship Advice': "What's something you're currently trying to figure out?",
             'Questions & Discussions': "Ask the community something you've always wondered about.",
             'Fantasy & Roleplay': "What's a scenario you've always wanted to explore?",
-            'First Experiences': "What was a first time that changed your perspective?",
             'default': "Share your thoughts with the community..."
         };
 
@@ -250,6 +270,44 @@
             loadRoomPosts(roomName);
         };
 
+        function loadRoomPosts(roomName) {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '<p class="text-center text-[10px] uppercase font-bold text-slate-500 py-10 animate-pulse">Synchronizing Feed...</p>';
+            
+            db.ref(`room_posts/${roomName}`).limitToLast(20).on('value', snap => {
+                const firebasePosts = snap.val() || {};
+                const mockPosts = MOCK_ROOM_DATA[roomName] || MOCK_ROOM_DATA['default'];
+                
+                container.innerHTML = '';
+                
+                // Show Mock Posts first to set the mood
+                mockPosts.forEach(p => renderSinglePost(p, true));
+
+                // Show Real Firebase Posts
+                for (let id in firebasePosts) {
+                    renderSinglePost(firebasePosts[id], false, id);
+                }
+                lucide.createIcons();
+            });
+        }
+
+        function renderSinglePost(p, isMock, id = null) {
+            const container = document.getElementById('posts-container');
+            const div = document.createElement('div');
+            div.className = `glass-card p-5 ${isMock ? 'border-indigo-500/20' : ''}`;
+            div.innerHTML = `
+                ${isMock ? '<div class="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-2">Featured Post</div>' : ''}
+                <p class="text-sm text-slate-300 leading-relaxed mb-4">${p.text}</p>
+                <div class="flex items-center justify-between border-t border-white/5 pt-4">
+                    <button class="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-indigo-400">
+                        <i data-lucide="heart" class="w-3.5 h-3.5"></i> ${p.likes || 0}
+                    </button>
+                    <button class="text-[9px] font-black uppercase text-slate-600 tracking-widest">Report</button>
+                </div>
+            `;
+            container.insertAdjacentElement('afterbegin', div);
+        }
+
         window.openCreatePost = () => {
             const prompt = ROOM_PROMPTS[activeRoomName] || ROOM_PROMPTS['default'];
             document.getElementById('room-prompt').innerText = prompt;
@@ -259,27 +317,6 @@
 
         window.closeCreatePost = () => document.getElementById('post-modal').classList.add('hidden');
 
-        function loadRoomPosts(roomName) {
-            const container = document.getElementById('posts-container');
-            container.innerHTML = '<p class="text-center text-[10px] uppercase font-bold text-slate-500 py-10 animate-pulse">Loading Feed...</p>';
-            db.ref(`room_posts/${roomName}`).limitToLast(20).on('value', snap => {
-                const posts = snap.val();
-                container.innerHTML = '';
-                if (!posts) {
-                    container.innerHTML = '<p class="text-center text-slate-600 text-xs py-20 italic">No posts here yet. Be the first!</p>';
-                    return;
-                }
-                for (let id in posts) {
-                    const p = posts[id];
-                    const div = document.createElement('div');
-                    div.className = "glass-card p-5";
-                    div.innerHTML = `<p class="text-sm text-slate-300 leading-relaxed mb-4">${p.text}</p><div class="flex items-center justify-between border-t border-white/5 pt-4"><div class="flex gap-4"><button onclick="reactPost('${id}', 'like')" class="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-indigo-400"><i data-lucide="heart" class="w-3.5 h-3.5"></i> ${p.likes || 0}</button></div><button onclick="reportPost('${id}')" class="text-[9px] font-black uppercase text-slate-600 tracking-widest">Report</button></div>`;
-                    container.insertAdjacentElement('afterbegin', div);
-                }
-                lucide.createIcons();
-            });
-        }
-
         window.submitPost = () => {
             const text = document.getElementById('post-text').value.trim();
             if (!text) return;
@@ -288,10 +325,7 @@
             closeCreatePost();
         };
 
-        window.reactPost = (postId, type) => { db.ref(`room_posts/${activeRoomName}/${postId}/likes`).transaction(count => (count || 0) + 1); };
-        window.reportPost = (postId) => { db.ref('reports').push({ postId, room: activeRoomName, reporter: myId, time: Date.now() }); alert("Reported."); };
-
-        // --- PRESERVED MATCHMAKING ---
+        // --- PRESERVED LOGIC ---
         const tagInput = document.getElementById('tag-input');
         tagInput.addEventListener('keydown', (e) => { if(e.key === 'Enter' && tagInput.value.trim()){ const val = tagInput.value.trim().toLowerCase(); if(!interests.includes(val)){ interests.push(val); renderTags(); } tagInput.value = ''; } });
         function renderTags() { const container = document.getElementById('tag-container'); container.innerHTML = interests.map(t => `<div class="bg-indigo-600 px-3 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-2">${t} <i data-lucide="x" class="w-3 h-3 cursor-pointer" onclick="removeTag('${t}')"></i></div>`).join(''); document.getElementById('next-to-prefs').disabled = interests.length < 1; lucide.createIcons(); }
