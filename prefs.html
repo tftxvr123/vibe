@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Preferences | VIBE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap'); body{font-family:'Plus Jakarta Sans'; background:#020617; color:white;}</style>
+</head>
+<body class="p-6 pt-24 flex flex-col items-center">
+    <div class="max-w-md w-full space-y-6">
+        <h2 class="text-4xl font-black mb-10 tracking-tight uppercase italic text-center">Filters</h2>
+        
+        <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10">
+            <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 tracking-widest text-center">Marital Status</label>
+            <div class="grid grid-cols-1 gap-2 mb-2">
+                <button onclick="setPref('marital', 'Anyone', this)" class="pref-btn active bg-indigo-600 p-3 rounded-xl font-bold text-xs">Anyone</button>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="setPref('marital', 'Single', this)" class="pref-btn border border-white/10 p-3 rounded-xl font-bold text-xs uppercase">Single</button>
+                <button onclick="setPref('marital', 'Married', this)" class="pref-btn border border-white/10 p-3 rounded-xl font-bold text-xs uppercase">Married</button>
+                <button onclick="setPref('marital', 'Divorced', this)" class="pref-btn border border-white/10 p-3 rounded-xl font-bold text-xs uppercase text-[9px]">Divorced</button>
+            </div>
+        </div>
+
+        <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10">
+            <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 tracking-widest text-center">Conversation Style</label>
+            <div class="grid grid-cols-1 gap-2">
+                <button onclick="setPref('style', 'Anything', this)" class="pref-btn active bg-indigo-600 p-3 rounded-xl font-bold text-xs">Anything</button>
+                <button onclick="setPref('style', 'Deep Talk', this)" class="pref-btn border border-white/10 p-3 rounded-xl font-bold text-xs">Deep Talk</button>
+                <button onclick="setPref('style', 'Deep Naughty', this)" class="pref-btn border border-white/10 p-3 rounded-xl font-bold text-xs">Deep Naughty</button>
+            </div>
+        </div>
+
+        <button onclick="location.href='match.html'" class="w-full mt-10 bg-indigo-600 py-5 rounded-2xl font-bold text-xl shadow-xl">FIND MY VIBE</button>
+    </div>
+
+    <script>
+        let prefs = { marital: 'Anyone', style: 'Anything' };
+        localStorage.setItem('vibe_prefs', JSON.stringify(prefs));
+
+        function setPref(type, val, btn) {
+            prefs[type] = val;
+            localStorage.setItem('vibe_prefs', JSON.stringify(prefs));
+            const parent = btn.parentElement.parentElement;
+            parent.querySelectorAll('.pref-btn').forEach(b => b.className = 'pref-btn border border-white/10 p-3 rounded-xl font-bold text-xs uppercase');
+            btn.className = 'pref-btn active bg-indigo-600 p-3 rounded-xl font-bold text-xs uppercase';
+        }
+    </script>
+</body>
+</html>
