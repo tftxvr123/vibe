@@ -1,32 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>VIBE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIBE | Meet on your wavelength</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        :root { --accent: #6366f1; --bg: #030712; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: #fff; overflow-x: hidden; }
+
+        /* Modern Mesh Background */
+        .mesh-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.1) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(79, 70, 229, 0.1) 0px, transparent 50%);
+            background-color: #020617;
+        }
+
+        /* Subtle Noise Texture */
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            opacity: 0.03; pointer-events: none;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+        }
+
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .bento-card { transition: all 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(255, 255, 255, 0.01); }
+        .bento-card:hover { background: rgba(255, 255, 255, 0.03); border-color: rgba(99, 102, 241, 0.3); transform: translateY(-2px); }
+        
+        .hero-text { font-size: clamp(3rem, 10vw, 6rem); line-height: 0.9; letter-spacing: -0.04em; }
+        .btn-premium { background: #fff; color: #000; box-shadow: 0 0 30px rgba(255,255,255,0.1); transition: all 0.2s ease; }
+        .btn-premium:hover { transform: scale(1.02); box-shadow: 0 0 40px rgba(99, 102, 241, 0.4); background: #6366f1; color: #fff; }
+    </style>
 </head>
-<body class="bg-[#020617] text-white font-sans">
-    <nav class="p-6 flex justify-between items-center border-b border-white/5">
-        <div class="flex items-center gap-2 font-black italic text-xl"><div class="w-8 h-8 bg-indigo-600 rounded-lg"></div>VIBE</div>
-        <div id="nav-actions" class="flex gap-4">
-            <a href="auth.html" class="text-xs font-bold uppercase text-indigo-400">Login</a>
+<body>
+
+    <div class="mesh-bg"></div>
+    <div class="noise"></div>
+
+    <!-- NAV -->
+    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-[#020617]/50 backdrop-blur-xl h-20 flex items-center justify-between px-6 md:px-12">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xl shadow-indigo-600/20">
+                <i data-lucide="zap" class="w-6 h-6 fill-current"></i>
+            </div>
+            <span class="text-2xl font-black italic tracking-tighter">VIBE</span>
+        </div>
+        <div id="nav-actions" class="flex items-center gap-6">
+            <a href="auth.html" class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-400 transition-colors">Login</a>
+            <a href="interests.html" class="hidden md:block bg-white/5 border border-white/10 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-white/10">Start Vibing</a>
         </div>
     </nav>
-    <section class="flex flex-col items-center pt-40 text-center px-6">
-        <h1 class="text-7xl font-black mb-6 tracking-tighter">MEET ON YOUR <br><span class="text-indigo-500 italic">WAVELENGTH.</span></h1>
-        <a href="interests.html" class="bg-indigo-600 px-12 py-5 rounded-2xl font-bold text-xl shadow-2xl">START VIBING</a>
-    </section>
+
+    <!-- MAIN SECTION -->
+    <main class="pt-40 pb-20 px-6 max-w-7xl mx-auto">
+        
+        <!-- HERO -->
+        <div class="text-center mb-24">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-8">
+                🇮🇳 LIVE ACROSS INDIA
+            </div>
+            <h1 class="hero-text font-black mb-8">
+                Meet on your <br/>
+                <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">wavelength.</span>
+            </h1>
+            <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
+                Skip the swiping. Stop the small talk. Vibe connects you with strangers who share your specific interests, instantly and anonymously.
+            </p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                <a href="interests.html" class="btn-premium px-12 py-5 rounded-2xl font-black text-xl uppercase tracking-tighter w-full md:w-auto">
+                    Start Vibing Now
+                </a>
+                <div class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/5 border border-white/5">
+                    <div class="flex -space-x-3">
+                        <div class="w-8 h-8 rounded-full border-2 border-[#020617] bg-indigo-500 flex items-center justify-center text-[10px] font-bold">A</div>
+                        <div class="w-8 h-8 rounded-full border-2 border-[#020617] bg-purple-500 flex items-center justify-center text-[10px] font-bold">R</div>
+                        <div class="w-8 h-8 rounded-full border-2 border-[#020617] bg-pink-500 flex items-center justify-center text-[10px] font-bold">S</div>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest"><span class="text-white" id="live-count">2,410</span> Vibing</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BENTO GRID (FILLING THE SPACE) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-24">
+            <!-- Card 1: Trending -->
+            <div class="md:col-span-2 bento-card p-8 rounded-[2.5rem]">
+                <div class="flex justify-between items-start mb-12">
+                    <div>
+                        <h3 class="text-xl font-bold italic uppercase tracking-tight">Trending Wavelengths</h3>
+                        <p class="text-xs text-slate-500 uppercase font-bold tracking-widest mt-1">What India is talking about</p>
+                    </div>
+                    <i data-lucide="trending-up" class="text-indigo-500 w-5 h-5"></i>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#CricketWorldCup</span>
+                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#UPSCPrep</span>
+                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#MalayalamCinema</span>
+                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#StartupLife</span>
+                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#DeepTalk</span>
+                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#AnimeIndia</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Stats -->
+            <div class="bento-card p-8 rounded-[2.5rem] bg-indigo-600/10 border-indigo-500/20">
+                <h3 class="text-xl font-bold italic uppercase tracking-tight mb-8">Daily Activity</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="text-3xl font-black italic">14,201</div>
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Matches Today</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-black italic">89%</div>
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Wavelength Accuracy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Security -->
+            <div class="bento-card p-8 rounded-[2.5rem]">
+                <i data-lucide="shield" class="text-indigo-500 mb-6"></i>
+                <h3 class="text-lg font-bold mb-2">Completely Private</h3>
+                <p class="text-sm text-slate-400 leading-relaxed font-medium">No phone numbers. No real names. Your identity is hidden until you choose to reveal it.</p>
+            </div>
+
+            <!-- Card 4: Friends -->
+            <div class="bento-card p-8 rounded-[2.5rem]">
+                <i data-lucide="users" class="text-purple-500 mb-6"></i>
+                <h3 class="text-lg font-bold mb-2">Build Your Circle</h3>
+                <p class="text-sm text-slate-400 leading-relaxed font-medium">Loved the conversation? Add them as a friend to chat anytime. (Registered users only)</p>
+            </div>
+
+            <!-- Card 5: Regions -->
+            <div class="bento-card p-8 rounded-[2.5rem]">
+                <i data-lucide="map-pin" class="text-pink-500 mb-6"></i>
+                <h3 class="text-lg font-bold mb-2">Truly Indian</h3>
+                <p class="text-sm text-slate-400 leading-relaxed font-medium">Connecting users from Mumbai to Kochi. Local vibes, global quality.</p>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="border-t border-white/5 pt-12 text-center">
+            <div class="flex justify-center gap-8 mb-8 text-slate-500 text-xs font-bold uppercase tracking-widest">
+                <a href="#" class="hover:text-white">Safety</a>
+                <a href="#" class="hover:text-white">Privacy</a>
+                <a href="#" class="hover:text-white">Terms</a>
+                <a href="#" class="hover:text-white">Contact</a>
+            </div>
+            <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest">&copy; 2025 VIBE India. All rights reserved.</p>
+        </footer>
+
+    </main>
+
     <script type="module">
-        import { auth, onAuthStateChanged } from './config.js';
+        import { auth, onAuthStateChanged, logoutUser } from './config.js';
+        
         onAuthStateChanged(auth, (user) => {
-            if(user) {
-                document.getElementById('nav-actions').innerHTML = `
-                    <a href="social.html" class="text-slate-400"><i data-lucide="users"></i></a>
-                    <a href="index.html" onclick="auth.signOut()" class="text-slate-400"><i data-lucide="log-out"></i></a>
+            const actions = document.getElementById('nav-actions');
+            if (user) {
+                actions.innerHTML = `
+                    <a href="social.html" class="text-slate-400 hover:text-white transition-colors"><i data-lucide="users" class="w-5 h-5"></i></a>
+                    <button id="logout-btn" class="text-xs font-bold uppercase tracking-widest text-red-500">Logout</button>
                 `;
-                lucide.createIcons();
+                document.getElementById('logout-btn').onclick = logoutUser;
             }
+            lucide.createIcons();
         });
+
+        // Simulate Live Counter
+        setInterval(() => {
+            const count = 2410 + Math.floor(Math.random() * 20);
+            document.getElementById('live-count').innerText = count.toLocaleString();
+        }, 3000);
+
+        lucide.createIcons();
     </script>
 </body>
 </html>
