@@ -11,25 +11,22 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #000; color: #fff; overflow-x: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #000; color: #fff; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .screen { display: none; min-height: 100vh; flex-direction: column; position: relative; z-index: 10; }
         .screen.active { display: flex; }
 
-        /* Industrial Pro Background */
-        .pro-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #000 80%); }
-        .noise { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; opacity: 0.04; pointer-events: none; background-image: url('https://grainy-gradients.vercel.app/noise.svg'); }
-
-        /* Premium Elements */
+        /* Premium Industrial Design */
+        .pro-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #000 85%); }
+        .noise { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; opacity: 0.05; pointer-events: none; background-image: url('https://grainy-gradients.vercel.app/noise.svg'); }
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.5rem; }
-        .bento-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; padding: 2rem; }
-        .pref-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s ease; }
-        .pref-btn.active { background: #6366f1; border-color: #818cf8; color: white; box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+        .bento-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; padding: 1.5rem; transition: 0.3s; }
+        
+        .pref-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s ease; border-radius: 1rem; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+        .pref-btn.active { background: #6366f1; border-color: #818cf8; color: white; box-shadow: 0 0 20px rgba(79, 70, 229, 0.4); }
 
-        /* Chat Styles */
-        .msg-me { background: #6366f1; border-radius: 1.25rem 1.25rem 0 1.25rem; align-self: flex-end; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); }
+        .msg-me { background: #6366f1; border-radius: 1.25rem 1.25rem 0 1.25rem; align-self: flex-end; }
         .msg-them { background: #1e293b; border-radius: 1.25rem 1.25rem 1.25rem 0; align-self: flex-start; }
         
-        /* Animations */
         @keyframes scan { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .radar-spin { animation: scan 4s linear infinite; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -40,14 +37,14 @@
     <div class="pro-bg"></div>
     <div class="noise"></div>
 
-    <!-- NAVBAR -->
-    <nav class="fixed top-0 w-full z-50 h-16 border-b border-white/5 bg-black/50 backdrop-blur-md flex items-center justify-between px-6 md:px-12">
+    <!-- PERSISTENT NAV -->
+    <nav class="fixed top-0 w-full z-50 h-16 border-b border-white/5 bg-black/50 backdrop-blur-md flex items-center justify-between px-6">
         <div class="flex items-center gap-2 cursor-pointer" onclick="location.reload()">
             <div class="w-7 h-7 bg-indigo-600 rounded flex items-center justify-center text-white shadow-lg"><i data-lucide="zap" class="w-4 h-4 fill-current"></i></div>
             <span class="text-lg font-bold tracking-tighter uppercase italic">VIBE</span>
         </div>
         <div class="flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
-            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+            <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span>
             <span id="live-counter" class="text-[9px] font-bold uppercase tracking-widest text-slate-400">2,410 Live</span>
         </div>
     </nav>
@@ -55,20 +52,18 @@
     <!-- 1. LANDING -->
     <section id="landing" class="screen active pt-32 px-6 items-center text-center">
         <div class="max-w-3xl">
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-[0.95] mb-8 uppercase italic">
-                Meet on your <br/><span class="text-indigo-400">wavelength.</span>
-            </h1>
-            <p class="text-slate-400 text-lg md:text-xl max-w-sm mx-auto mb-12">Anonymous, interest-based discovery for the next generation of India.</p>
-            <button onclick="showScreen('interests')" class="bg-white text-black px-12 py-5 rounded-2xl font-bold text-lg uppercase tracking-tighter shadow-2xl hover:bg-indigo-600 hover:text-white transition-all">Start Vibing</button>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-none mb-6 uppercase italic">Meet on your <br/><span class="text-indigo-500">wavelength.</span></h1>
+            <p class="text-slate-400 text-base mb-10 max-w-sm mx-auto">India's industrial-grade anonymous chat engine.</p>
+            <button onclick="showScreen('interests')" class="bg-white text-black px-12 py-5 rounded-2xl font-black text-lg uppercase tracking-tighter hover:bg-indigo-600 hover:text-white transition-all">Start Vibing</button>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-24 text-left">
-                <div class="bento-card">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Live Activity</h3>
-                    <div class="text-3xl font-bold italic tracking-tighter">14,201 <span class="text-indigo-500 text-sm">Matches Today</span></div>
+            <div class="grid grid-cols-2 gap-3 mt-24 text-left">
+                <div class="bento-card col-span-2 md:col-span-1">
+                    <h3 class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2">Network Load</h3>
+                    <div class="text-2xl font-bold italic tracking-tighter text-indigo-400">98.2% <span class="text-white text-xs">Match Success</span></div>
                 </div>
-                <div class="bento-card">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Privacy</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed">No tracking. No names. Your data is deleted the moment you skip a chat.</p>
+                <div class="bento-card col-span-2 md:col-span-1">
+                    <h3 class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2">Privacy Protocol</h3>
+                    <p class="text-[10px] text-slate-400 leading-tight">Ephemeral sessions. No user logs retained post-disconnect.</p>
                 </div>
             </div>
         </div>
@@ -77,63 +72,62 @@
     <!-- 2. INTERESTS -->
     <section id="interests" class="screen pt-28 px-6 items-center">
         <div class="max-w-md w-full">
-            <h2 class="text-3xl font-bold mb-2 tracking-tight uppercase italic">What's your vibe?</h2>
-            <p class="text-slate-400 text-sm mb-10">Add an interest to find your frequency.</p>
+            <h2 class="text-3xl font-bold mb-8 uppercase italic text-center">What's your vibe?</h2>
             <div class="glass-card p-6 mb-8 shadow-2xl focus-within:border-indigo-500/50 transition-all">
                 <div id="tag-container" class="flex flex-wrap gap-2 mb-4"></div>
-                <input id="tag-input" type="text" placeholder="Type (e.g. Cinema, F1)..." class="w-full bg-transparent outline-none text-xl font-medium py-1 text-white">
+                <input id="tag-input" type="text" placeholder="Type (e.g. Cinema, F1, Tech)..." class="w-full bg-transparent outline-none text-xl font-medium py-1 text-white">
             </div>
-            <button id="next-to-prefs" disabled onclick="showScreen('preferences')" class="w-full bg-indigo-600 py-5 rounded-2xl font-black text-lg uppercase shadow-xl disabled:opacity-20 transition-all">Continue</button>
+            <button id="next-to-prefs" disabled onclick="showScreen('preferences')" class="w-full bg-indigo-600 py-5 rounded-2xl font-black text-lg uppercase shadow-xl disabled:opacity-10 transition-all">Continue</button>
         </div>
     </section>
 
     <!-- 3. PREFERENCES -->
-    <section id="preferences" class="screen pt-28 px-6 items-center">
+    <section id="preferences" class="screen pt-28 px-6 items-center pb-20">
         <div class="max-w-md w-full space-y-6">
-            <h2 class="text-3xl font-bold mb-8 text-center tracking-tight uppercase italic">Fine-tune</h2>
+            <h2 class="text-3xl font-bold mb-4 text-center tracking-tight uppercase italic">Fine-tune</h2>
             <div class="glass-card p-6">
-                <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 tracking-widest text-center">Marital Status</label>
+                <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 tracking-widest text-center">Status Filter</label>
                 <div class="grid grid-cols-3 gap-2">
-                    <button onclick="setPref('marital', 'Single', this)" class="pref-btn active p-3 rounded-xl font-bold text-[10px] uppercase">Single</button>
-                    <button onclick="setPref('marital', 'Married', this)" class="pref-btn p-3 rounded-xl font-bold text-[10px] uppercase">Married</button>
-                    <button onclick="setPref('marital', 'Divorced', this)" class="pref-btn p-3 rounded-xl font-bold text-[10px] uppercase">Divorced</button>
+                    <button onclick="setPref('marital', 'Single', this)" class="pref-btn active p-3">Single</button>
+                    <button onclick="setPref('marital', 'Married', this)" class="pref-btn p-3">Married</button>
+                    <button onclick="setPref('marital', 'Divorced', this)" class="pref-btn p-3">Divorced</button>
                 </div>
             </div>
             <div class="glass-card p-6">
                 <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 tracking-widest text-center">Chat Style</label>
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="setPref('style', 'Deep Talk', this)" class="pref-btn active p-3 rounded-xl font-bold text-[10px] uppercase text-center">Deep Talk</button>
-                    <button onclick="setPref('style', 'Deep Naughty', this)" class="pref-btn p-3 rounded-xl font-bold text-[10px] uppercase text-center">Deep Naughty</button>
+                    <button onclick="setPref('style', 'Deep Talk', this)" class="pref-btn active p-3">Deep Talk</button>
+                    <button onclick="setPref('style', 'Deep Naughty', this)" class="pref-btn p-3">Deep Naughty</button>
                 </div>
             </div>
-            <button onclick="startMatching()" class="w-full mt-10 bg-white text-black py-5 rounded-2xl font-black text-lg uppercase shadow-xl hover:bg-indigo-600 hover:text-white transition-all">Find Match</button>
+            <button onclick="startMatching()" class="w-full mt-10 bg-white text-black py-5 rounded-2xl font-black text-lg uppercase shadow-xl">Scan Wavelength</button>
         </div>
     </section>
 
     <!-- 4. MATCHING -->
     <section id="matching" class="screen items-center justify-center bg-black text-center p-6">
-        <div class="relative w-64 h-64 flex items-center justify-center mb-12">
+        <div class="relative w-56 h-56 flex items-center justify-center mb-12">
             <div class="absolute inset-0 border border-indigo-500/20 rounded-full radar-spin"></div>
-            <div class="w-20 h-20 bg-indigo-600 rounded-[2rem] flex items-center justify-center shadow-[0_0_50px_rgba(79,70,229,0.5)]"><i data-lucide="zap" class="w-8 h-8"></i></div>
+            <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center animate-pulse"><i data-lucide="compass" class="w-8 h-8"></i></div>
         </div>
-        <h2 class="text-3xl font-bold italic uppercase tracking-tighter mb-2">Scanning...</h2>
-        <p id="match-status" class="text-indigo-400 text-[10px] font-bold uppercase tracking-[0.3em] animate-pulse italic">Connecting to Indian Wavelengths</p>
-        <button onclick="location.reload()" class="mt-20 px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-red-500">Cancel Search</button>
+        <h2 class="text-3xl font-bold italic uppercase tracking-tighter">Searching</h2>
+        <p class="text-indigo-400 text-[9px] font-bold uppercase tracking-[0.4em] mt-2">Establishing Secure Frequency</p>
+        <button onclick="location.reload()" class="mt-20 px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:text-red-400 transition-all">Cancel</button>
     </section>
 
     <!-- 5. CHAT -->
     <section id="chat" class="screen bg-black">
-        <header class="h-20 border-b border-white/5 flex items-center justify-between px-6 glass-nav sticky top-0 z-20">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-6 bg-black/80 backdrop-blur-xl sticky top-0 z-20">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-xs uppercase">V</div>
+                <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-xs">V</div>
                 <div>
                     <div class="font-bold text-sm italic uppercase tracking-tight">Stranger</div>
-                    <div id="chat-pref" class="text-[9px] text-indigo-400 font-bold uppercase tracking-widest">Active Connection</div>
+                    <div id="chat-pref" class="text-[9px] text-indigo-400 font-bold uppercase tracking-widest">Connected</div>
                 </div>
             </div>
-            <button onclick="skipChat()" class="bg-red-500/10 border border-red-500/20 text-red-500 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">Skip</button>
+            <button onclick="skipChat()" class="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-2 rounded-xl text-[10px] font-bold uppercase">Skip</button>
         </header>
-        <div id="chat-window" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-4 no-scrollbar pb-32"></div>
+        <div id="chat-window" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-3 no-scrollbar pb-32"></div>
         <div class="p-4 bg-black border-t border-white/5 absolute bottom-0 w-full">
             <div class="max-w-2xl mx-auto flex gap-3 bg-white/5 p-2 rounded-2xl border border-white/10">
                 <input id="chat-input" type="text" placeholder="Send a message..." class="flex-1 bg-transparent px-4 py-3 outline-none text-sm text-white font-medium">
@@ -143,7 +137,7 @@
     </section>
 
     <script>
-        // --- FIREBASE CONFIG ---
+        // --- FIREBASE INITIALIZATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyDjve9Lpih3Tl4mNGn1gxdZ6RQqONs7Bo4",
             authDomain: "vibe-78d6f.firebaseapp.com",
@@ -156,14 +150,12 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- APP STATE ---
         let myId = localStorage.getItem('vibe_uid') || 'u' + Math.random().toString(36).substr(2, 7);
         localStorage.setItem('vibe_uid', myId);
         let interests = [];
         let prefs = { marital: 'Single', style: 'Deep Talk' };
         let currentRoom = null;
 
-        // --- GLOBAL UI FUNCTIONS ---
         window.showScreen = (id) => {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -171,15 +163,12 @@
             lucide.createIcons();
         };
 
-        // --- TAGS ---
+        // TAGS
         const tagInput = document.getElementById('tag-input');
         tagInput.addEventListener('keydown', (e) => {
             if(e.key === 'Enter' && tagInput.value.trim()){
                 const val = tagInput.value.trim().toLowerCase();
-                if(!interests.includes(val)){
-                    interests.push(val);
-                    renderTags();
-                }
+                if(!interests.includes(val)){ interests.push(val); renderTags(); }
                 tagInput.value = '';
             }
         });
@@ -191,79 +180,66 @@
             lucide.createIcons();
         }
 
-        window.removeTag = (t) => {
-            interests = interests.filter(i => i !== t);
-            renderTags();
-        }
-
+        window.removeTag = (t) => { interests = interests.filter(i => i !== t); renderTags(); }
         window.setPref = (type, val, btn) => {
             prefs[type] = val;
-            const parent = btn.parentElement.parentElement;
-            parent.querySelectorAll('.pref-btn').forEach(b => b.classList.remove('active'));
+            btn.parentElement.parentElement.querySelectorAll('.pref-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
 
-        // --- MATCHMAKING (PING-PONG LOGIC) ---
+        // --- MATCHMAKING FIX ---
         window.startMatching = () => {
             currentRoom = null;
             showScreen('matching');
 
-            const queueRef = db.ref('queue');
-            const myNotificationRef = db.ref(`notifications/${myId}`);
+            const myNotifyRef = db.ref(`notif/${myId}`);
+            myNotifyRef.remove(); // Cleanup old pings
 
-            // 1. Wipe my old match notifications
-            myNotificationRef.remove();
-
-            // 2. Listen for a "Ping" (someone else found me)
-            myNotificationRef.on('value', (snap) => {
+            // Listen for matches
+            myNotifyRef.on('value', (snap) => {
                 const data = snap.val();
                 if (data && data.roomId) {
-                    myNotificationRef.off();
-                    queueRef.child(myId).remove();
+                    myNotifyRef.off();
+                    db.ref('queue').child(myId).remove();
                     joinChat(data.roomId, data.style);
                 }
             });
 
-            // 3. Scan the queue for a waiting stranger
-            queueRef.once('value', (snap) => {
+            // Scan for peer
+            db.ref('queue').once('value', (snap) => {
                 const users = snap.val();
-                let foundPeer = null;
-
+                let peer = null;
                 if (users) {
                     for (let uid in users) {
                         if (uid === myId) continue;
-                        const peerInterests = users[uid].interests || [];
-                        const common = peerInterests.filter(i => interests.includes(i));
-                        if (common.length > 0) {
-                            foundPeer = uid;
-                            break;
-                        }
+                        const shared = (users[uid].interests || []).some(i => interests.includes(i));
+                        if (shared) { peer = uid; break; }
                     }
                 }
 
-                if (foundPeer) {
-                    // I found them! Create the room
-                    const roomId = [myId, foundPeer].sort().join('_');
-                    // A. Alert THEM
-                    db.ref(`notifications/${foundPeer}`).set({ roomId, style: prefs.style });
-                    // B. Remove THEM from queue
-                    queueRef.child(foundPeer).remove();
-                    // C. Join myself
+                if (peer) {
+                    const roomId = [myId, peer].sort().join('_');
+                    // Reset room status to active immediately to fix the "auto-skip" bug
+                    db.ref(`rooms/${roomId}/status`).set('active');
+                    db.ref(`rooms/${roomId}/messages`).remove(); // Clear old logs
+
+                    db.ref(`notif/${peer}`).set({ roomId, style: prefs.style });
+                    db.ref('queue').child(peer).remove();
                     joinChat(roomId, prefs.style);
                 } else {
-                    // No one found, I'll wait in the queue
-                    queueRef.child(myId).set({ interests, time: Date.now() });
+                    db.ref('queue').child(myId).set({ interests, time: Date.now() });
                 }
             });
         };
 
-        // --- CHAT ---
+        // --- CHAT LOGIC ---
         function joinChat(roomId, style) {
             currentRoom = roomId;
             showScreen('chat');
             document.getElementById('chat-pref').innerText = style + " Mode";
             document.getElementById('chat-window').innerHTML = '';
-            
+            document.getElementById('chat-input').disabled = false;
+
             const msgRef = db.ref(`rooms/${roomId}/messages`);
             msgRef.off();
             msgRef.on('child_added', (snap) => {
@@ -271,11 +247,13 @@
                 addUI(msg.sender === myId ? 'me' : 'stranger', msg.text);
             });
 
-            // Status monitor for skip
-            db.ref(`rooms/${roomId}/status`).on('value', (snap) => {
+            // Status Monitor
+            const statusRef = db.ref(`rooms/${roomId}/status`);
+            statusRef.on('value', (snap) => {
                 if (snap.val() === 'ended') {
                     addUI('system', 'Stranger has left the wavelength.');
                     document.getElementById('chat-input').disabled = true;
+                    statusRef.off();
                 }
             });
         }
@@ -290,17 +268,17 @@
 
         window.skipChat = () => {
             if (currentRoom) db.ref(`rooms/${currentRoom}/status`).set('ended');
-            location.reload();
+            setTimeout(() => location.reload(), 100);
         };
 
         function addUI(sender, text) {
             const box = document.getElementById('chat-window');
             const div = document.createElement('div');
             if (sender === 'system') {
-                div.className = "text-center text-[10px] font-bold text-red-500 uppercase py-10 animate-pulse";
+                div.className = "text-center text-[9px] font-bold text-red-500 uppercase py-8 animate-pulse";
                 div.innerText = text;
             } else {
-                div.className = `max-w-[80%] px-5 py-3 text-sm font-medium ${sender === 'me' ? 'msg-me' : 'msg-them'}`;
+                div.className = `max-w-[85%] px-4 py-2.5 text-sm font-medium ${sender === 'me' ? 'msg-me' : 'msg-them'}`;
                 div.innerText = text;
             }
             box.appendChild(div);
@@ -308,12 +286,10 @@
         }
 
         document.getElementById('chat-input').onkeydown = (e) => { if(e.key === 'Enter') sendMessage(); };
-        
         setInterval(() => {
-            const count = 2410 + Math.floor(Math.random() * 25);
-            document.getElementById('live-counter').innerText = count.toLocaleString() + " Live";
-        }, 4000);
-
+            const c = 2410 + Math.floor(Math.random() * 15);
+            document.getElementById('live-counter').innerText = c.toLocaleString() + " Live";
+        }, 5000);
         lucide.createIcons();
     </script>
 </body>
