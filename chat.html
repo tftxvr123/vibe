@@ -104,17 +104,26 @@
             }
         });
 
-        // Skip Function: Kills room and goes back to matching
+          // Skip Function: Kills room and goes back to matching
         window.skipSession = async () => {
-            if (roomId) {
-                isActive = false;
-                await set(ref(db, `rooms/${roomId}/status`), 'ended');
-                // Small delay to ensure DB write before we leave
-                setTimeout(() => {
-                    window.location.href = 'match.html';
-                }, 200);
-            }
-        };
+    if (!roomId || !myUID) return;
+
+    isActive = false;
+    
+    // 1. Signal to the peer that session is over
+    await set(ref(db, `rooms/${roomId}/status`), 'ended');
+    
+    // 2. IMPORTANT: Wipe the match records in the lobby for BOTH users
+    // This prevents the "Match Loop" bug
+    await remove(ref(db, `lobby/${myUID}/match`));
+    if (peerId) {
+        await remove(ref(db, `lobby/${peerId}/match`));
+    }
+
+    // 3. Go to match.html with a "cache buster" to ensure a fresh search
+    window.location.href = 'match.html?refresh=' + Date.now();
+};
+
 
         window.exitToHome = () => {
             if (roomId) set(ref(db, `rooms/${roomId}/status`), 'ended');
