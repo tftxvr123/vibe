@@ -36,6 +36,11 @@
         onAuthStateChanged(auth, async (user) => {
             myUID = user ? user.uid : getMyUID();
 
+            // NEW: Immediate Lobby Wipe to prevent "Re-matching" while already in chat
+    if (myUID) {
+        import { db, ref, remove } from './config.js'; // Ensure these are imported
+        remove(ref(db, `lobby/${myUID}`));
+    }
             // 1. CLEAR matching data as soon as we enter
             remove(ref(db, `waitlist/${myUID}`));
             remove(ref(db, `matches/${myUID}`));
