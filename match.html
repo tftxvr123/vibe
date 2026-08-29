@@ -32,4 +32,9 @@
         const data = snap.val();
         if(data) window.location.href = `chat.html?room=${data.roomId}&peer=${data.peerUID}&style=${data.style}`;
     });
+
+    // Inside match.html <script>
+// When a match is found, ensure the URL looks like this:
+const roomId = [myUID, peerId].sort().join('_');
+window.location.href = `chat.html?room=${roomId}&peer=${peerId}&style=${prefs.style}`;
 </script>
