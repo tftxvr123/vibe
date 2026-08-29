@@ -1,40 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>Login | VIBE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join VIBE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body{background:#020617; color:white; font-family:'Plus Jakarta Sans',sans-serif;}</style>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 2.5rem; }
+    </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
-    <div class="w-full max-w-sm bg-white/5 p-8 rounded-[2.5rem] border border-white/10">
-        <h2 class="text-3xl font-black mb-8 text-center uppercase italic">Join Vibe</h2>
-        <div class="space-y-4 mb-6">
-            <input id="email" type="email" placeholder="Email" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none">
-            <input id="pass" type="password" placeholder="Password" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none">
-            <input id="nick" type="text" placeholder="Your Nickname" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none">
+
+    <div class="w-full max-w-sm glass-card p-8 shadow-2xl">
+        <div class="text-center mb-8">
+            <h2 id="auth-title" class="text-4xl font-black italic uppercase tracking-tighter mb-2">Login</h2>
+            <p id="auth-subtitle" class="text-slate-500 text-sm font-medium">Welcome back to the wavelength.</p>
         </div>
-        <button id="auth-btn" class="w-full bg-indigo-600 py-4 rounded-xl font-bold mb-4">CONTINUE</button>
-        <p class="text-center text-[10px] text-slate-500">Log in or Sign up to add friends</p>
+
+        <!-- Google Login (Primary for Youngsters) -->
+        <button onclick="loginWithGoogle()" class="w-full bg-white text-black py-4 rounded-2xl font-bold flex items-center justify-center gap-3 mb-6 hover:bg-slate-200 transition-all">
+            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-5 h-5">
+            Continue with Google
+        </button>
+
+        <div class="flex items-center gap-4 mb-6 opacity-20">
+            <div class="h-px bg-white flex-1"></div>
+            <span class="text-[10px] font-bold uppercase">OR</span>
+            <div class="h-px bg-white flex-1"></div>
+        </div>
+
+        <!-- Email/Pass Forms -->
+        <div class="space-y-3 mb-6">
+            <input id="email" type="email" placeholder="Email address" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-indigo-500 transition-all text-sm">
+            <input id="pass" type="password" placeholder="Password" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-indigo-500 transition-all text-sm">
+            <input id="nick" type="text" placeholder="Choose a Nickname" class="hidden w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-indigo-500 transition-all text-sm">
+        </div>
+
+        <button id="main-auth-btn" onclick="handleEmailAuth()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold mb-6 shadow-lg shadow-indigo-500/20">
+            Login to Vibe
+        </button>
+
+        <!-- Toggle Mode -->
+        <p class="text-center text-xs text-slate-500 font-medium">
+            <span id="toggle-text">Don't have an account?</span> 
+            <button onclick="toggleMode()" id="toggle-link" class="text-indigo-400 font-bold ml-1">Sign Up</button>
+        </p>
+
+        <a href="index.html" class="block text-center mt-8 text-[10px] text-slate-600 font-bold uppercase tracking-widest hover:text-white">← Back to Home</a>
     </div>
 
     <script type="module">
-        import { auth, db, set, ref } from './config.js';
+        import { auth, db, googleProvider, signInWithPopup, set, ref, get } from './config.js';
         import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        document.getElementById('auth-btn').onclick = async () => {
+        let isSignUp = false;
+
+        window.toggleMode = () => {
+            isSignUp = !isSignUp;
+            document.getElementById('auth-title').innerText = isSignUp ? 'Sign Up' : 'Login';
+            document.getElementById('auth-subtitle').innerText = isSignUp ? 'Create your wavelength profile.' : 'Welcome back to the wavelength.';
+            document.getElementById('main-auth-btn').innerText = isSignUp ? 'Create Account' : 'Login to Vibe';
+            document.getElementById('toggle-text').innerText = isSignUp ? 'Already have an account?' : "Don't have an account?";
+            document.getElementById('toggle-link').innerText = isSignUp ? 'Login' : 'Sign Up';
+            document.getElementById('nick').classList.toggle('hidden', !isSignUp);
+        };
+
+        window.loginWithGoogle = async () => {
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                
+                // Check if user exists in database, if not create entry
+                const userRef = ref(db, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                if (!snapshot.exists()) {
+                    await set(userRef, {
+                        nickname: user.displayName || 'Viber',
+                        email: user.email,
+                        photo: user.photoURL
+                    });
+                }
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error(error);
+                alert("Google login failed.");
+            }
+        };
+
+        window.handleEmailAuth = async () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('pass').value;
             const nick = document.getElementById('nick').value;
 
+            if (!email || !pass) return alert("Fill in the fields!");
+
             try {
-                const res = await createUserWithEmailAndPassword(auth, email, pass);
-                await set(ref(db, 'users/' + res.user.uid), { nickname: nick, email });
-                location.href = 'index.html';
-            } catch (e) {
-                try {
+                if (isSignUp) {
+                    if (!nick) return alert("Choose a nickname!");
+                    const res = await createUserWithEmailAndPassword(auth, email, pass);
+                    await set(ref(db, 'users/' + res.user.uid), { nickname: nick, email });
+                } else {
                     await signInWithEmailAndPassword(auth, email, pass);
-                    location.href = 'index.html';
-                } catch (err) { alert(err.message); }
+                }
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert(error.message);
             }
         };
     </script>
