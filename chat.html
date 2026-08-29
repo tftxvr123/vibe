@@ -6,6 +6,43 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>body{background:#020617; color:white; font-family:'Plus Jakarta Sans',sans-serif;} .no-scrollbar::-webkit-scrollbar{display:none;}</style>
 </head>
+    <!-- NAV HEADER -->
+<nav class="fixed top-0 w-full z-50 bg-[#020617]/80 backdrop-blur-md border-b border-white/5 h-16 flex items-center justify-between px-6">
+    <div class="flex items-center gap-4">
+        <!-- Back Button -->
+        <button onclick="history.back()" class="text-slate-400 hover:text-white transition-colors">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </button>
+        <!-- Home Link -->
+        <a href="index.html" class="flex items-center gap-2 font-black italic text-lg tracking-tighter">
+            <div class="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center"><i data-lucide="zap" class="w-4 h-4 fill-current"></i></div>
+            VIBE
+        </a>
+    </div>
+    
+    <div id="nav-user-actions" class="flex items-center gap-4">
+        <!-- Will be filled by JavaScript -->
+    </div>
+</nav>
+
+<script type="module">
+    import { auth, onAuthStateChanged, logoutUser } from './config.js';
+    
+    // Listen for Auth State
+    onAuthStateChanged(auth, (user) => {
+        const actionArea = document.getElementById('nav-user-actions');
+        if (user) {
+            actionArea.innerHTML = `
+                <a href="social.html" class="text-slate-400 hover:text-white"><i data-lucide="users" class="w-5 h-5"></i></a>
+                <button id="logout-btn" class="text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-400">Logout</button>
+            `;
+            document.getElementById('logout-btn').onclick = logoutUser;
+        } else {
+            actionArea.innerHTML = `<a href="auth.html" class="text-xs font-bold uppercase tracking-widest text-indigo-400">Login</a>`;
+        }
+        lucide.createIcons();
+    });
+</script>
 <body class="flex flex-col h-screen max-w-2xl mx-auto border-x border-white/5 bg-[#020617]">
     <header class="p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#020617]/80 backdrop-blur-md z-20">
         <div class="flex items-center gap-3">
