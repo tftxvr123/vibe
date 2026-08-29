@@ -17,7 +17,18 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-export { db, auth, googleProvider, signInWithPopup, ref, set, onValue, push, onChildAdded, remove, get, onAuthStateChanged, signOut };
+// NEW: Global Logout Function
+export const logoutUser = async () => {
+    try {
+        await signOut(auth);
+        localStorage.clear(); // Clears interests and preferences
+        window.location.href = 'index.html';
+    } catch (error) {
+        console.error("Logout failed", error);
+    }
+};
+
+export { db, auth, googleProvider, signInWithPopup, ref, set, onValue, push, onChildAdded, remove, get, onAuthStateChanged };
 
 export const getMyUID = () => {
     let id = localStorage.getItem('vibe_temp_id');
