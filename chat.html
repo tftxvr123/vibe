@@ -8,31 +8,28 @@
 </head>
 <body class="flex flex-col h-screen max-w-2xl mx-auto border-x border-white/5 bg-[#020617]">
     
-    <header class="p-4 border-b border-white/5 flex items-center justify-between glass sticky top-0 z-20 bg-[#020617]/80 backdrop-blur-md">
+    <header class="p-4 border-b border-white/5 flex items-center justify-between glass sticky top-0 z-20 bg-[#020617]">
         <div class="flex items-center gap-3">
             <button onclick="location.href='index.html'" class="text-slate-400"><i data-lucide="home" class="w-5 h-5"></i></button>
             <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-bold uppercase" id="peer-initial">?</div>
             <div>
                 <div id="peer-name" class="font-bold text-sm text-white italic">Stranger</div>
-                <div id="mode-label" class="text-[9px] text-indigo-400 font-extrabold uppercase tracking-widest">Live</div>
+                <div id="status-label" class="text-[9px] text-green-500 font-bold uppercase tracking-widest animate-pulse">Live Connection</div>
             </div>
         </div>
         <div class="flex gap-2">
-            <!-- ADD FRIEND BUTTON -->
-            <button id="add-friend-btn" class="hidden bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 hover:scale-105 transition-all">
+            <button id="add-friend-btn" class="hidden bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg">
                 + Add Friend
             </button>
-            <button onclick="location.href='index.html'" class="bg-white text-black px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-tighter">Next</button>
+            <button onclick="location.href='index.html'" class="bg-white text-black px-4 py-2 rounded-xl text-xs font-bold uppercase">Next</button>
         </div>
     </header>
 
-    <div id="chat-window" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar">
-        <div class="text-center py-10 opacity-20 text-[10px] font-extrabold uppercase tracking-[0.3em]">Connection Secured</div>
-    </div>
+    <div id="chat-window" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar pb-24"></div>
 
     <div class="p-4 bg-[#020617] border-t border-white/5 sticky bottom-0">
         <div class="flex gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/10 shadow-inner">
-            <input id="chat-input" type="text" placeholder="Say something..." class="flex-1 bg-transparent px-4 py-3 outline-none text-sm text-white">
+            <input id="chat-input" type="text" placeholder="Type a message..." class="flex-1 bg-transparent px-4 py-3 outline-none text-sm text-white">
             <button id="send-btn" class="bg-indigo-600 text-white w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
                 <i data-lucide="arrow-up" class="w-6 h-6"></i>
             </button>
@@ -45,52 +42,63 @@
         const params = new URLSearchParams(window.location.search);
         const roomId = params.get('room');
         const peerId = params.get('peer');
-        const myUID = auth.currentUser ? auth.currentUser.uid : getMyUID();
+        
+        let myUID = null;
 
-        // 1. Setup Chat Room
-        if (roomId) {
-            onChildAdded(ref(db, `rooms/${roomId}/messages`), (snap) => {
-                const msg = snap.val();
-                addMessageUI(msg.sender === myUID ? 'me' : 'stranger', msg.text);
-            });
-        }
-
-        // 2. Friend Logic
         onAuthStateChanged(auth, async (user) => {
-            if (user && peerId && !peerId.startsWith('u')) {
-                // Check if already friends
-                const friendSnap = await get(ref(db, `friends/${user.uid}/${peerId}`));
-                if (!friendSnap.exists()) {
-                    const btn = document.getElementById('add-friend-btn');
-                    btn.classList.remove('hidden');
-                    btn.onclick = async () => {
-                        await set(ref(db, `friends/${user.uid}/${peerId}`), true);
-                        await set(ref(db, `friends/${peerId}/${user.uid}`), true);
-                        btn.innerText = "ADDED";
-                        btn.classList.replace('bg-indigo-600', 'bg-green-600');
-                        setTimeout(() => btn.classList.add('hidden'), 2000);
-                    };
-                }
+            myUID = user ? user.uid : getMyUID();
+            console.log("My ID:", myUID, "Peer ID:", peerId);
 
-                // Get Peer Name
+            if (roomId) {
+                // Listen for messages
+                onChildAdded(ref(db, `rooms/${roomId}/messages`), (snap) => {
+                    const msg = snap.val();
+                    addMessageUI(msg.sender === myUID ? 'me' : 'stranger', msg.text);
+                });
+            }
+
+            // FRIEND LOGIC
+            // Button only appears if I am logged in AND peer is logged in (peerId is not u...)
+            if (user && peerId && !peerId.startsWith('u')) {
                 const peerSnap = await get(ref(db, `users/${peerId}`));
                 if (peerSnap.exists()) {
-                    document.getElementById('peer-name').innerText = peerSnap.val().nickname;
-                    document.getElementById('peer-initial').innerText = peerSnap.val().nickname[0];
+                    const peerData = peerSnap.val();
+                    document.getElementById('peer-name').innerText = peerData.nickname;
+                    document.getElementById('peer-initial').innerText = peerData.nickname[0];
+                    
+                    // Check if already friends
+                    const friendSnap = await get(ref(db, `friends/${user.uid}/${peerId}`));
+                    if (!friendSnap.exists()) {
+                        const btn = document.getElementById('add-friend-btn');
+                        btn.classList.remove('hidden');
+                        btn.onclick = async () => {
+                            await set(ref(db, `friends/${user.uid}/${peerId}`), true);
+                            await set(ref(db, `friends/${peerId}/${user.uid}`), true);
+                            btn.innerText = "ADDED";
+                            btn.disabled = true;
+                        };
+                    }
                 }
             }
         });
 
-        // 3. Messaging
-        document.getElementById('send-btn').onclick = sendMessage;
-        document.getElementById('chat-input').onkeydown = (e) => e.key === 'Enter' && sendMessage();
-
         async function sendMessage() {
             const input = document.getElementById('chat-input');
-            if (!input.value.trim() || !roomId) return;
-            await push(ref(db, `rooms/${roomId}/messages`), { sender: myUID, text: input.value.trim() });
+            const text = input.value.trim();
+            if (!text || !roomId || !myUID) {
+                console.error("Missing data", {text, roomId, myUID});
+                return;
+            }
+            await push(ref(db, `rooms/${roomId}/messages`), { 
+                sender: myUID, 
+                text: text,
+                time: Date.now()
+            });
             input.value = '';
         }
+
+        document.getElementById('send-btn').onclick = sendMessage;
+        document.getElementById('chat-input').onkeydown = (e) => { if(e.key === 'Enter') sendMessage(); };
 
         function addMessageUI(sender, text) {
             const box = document.getElementById('chat-window');
