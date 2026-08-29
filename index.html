@@ -15,7 +15,6 @@
         .screen { display: none; min-height: 100vh; flex-direction: column; position: relative; z-index: 10; }
         .screen.active { display: flex; }
 
-        /* Industrial Pro UI */
         .pro-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #000 85%); }
         .noise { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; opacity: 0.05; pointer-events: none; background-image: url('https://grainy-gradients.vercel.app/noise.svg'); }
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.5rem; }
@@ -83,10 +82,11 @@
     <!-- SCREEN: ROOM DIRECTORY -->
     <section id="rooms" class="screen pt-24 px-6 pb-20">
         <div class="max-w-2xl mx-auto w-full">
-            <h2 class="text-3xl font-black uppercase italic mb-8">Vibe <span class="text-indigo-500">Rooms</span></h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="room-list">
-                <!-- Injected via JS -->
+            <div class="flex items-center gap-4 mb-8">
+                <button onclick="showScreen('landing')" class="text-slate-500 hover:text-white"><i data-lucide="chevron-left"></i></button>
+                <h2 class="text-3xl font-black uppercase italic">Vibe <span class="text-indigo-500">Rooms</span></h2>
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="room-list"></div>
         </div>
     </section>
 
@@ -98,29 +98,35 @@
                 <h2 id="current-room-name" class="text-xl font-black uppercase italic text-indigo-500">Room Name</h2>
                 <button onclick="openCreatePost()" class="bg-indigo-600 p-2 rounded-xl text-white shadow-lg"><i data-lucide="plus" class="w-5 h-5"></i></button>
             </div>
-            
-            <div id="posts-container" class="space-y-4">
-                <!-- Posts injected here -->
-            </div>
+            <div id="posts-container" class="space-y-4"></div>
         </div>
     </section>
 
-    <!-- CREATE POST MODAL -->
+    <!-- UPGRADED CREATE POST MODAL (FEATURE 10) -->
     <div id="post-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-6">
-        <div class="glass-card p-8 w-full max-w-md">
-            <h3 class="text-xl font-black uppercase italic mb-6">Share a post</h3>
-            <textarea id="post-text" placeholder="What's on your mind?" class="w-full h-40 bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white text-sm mb-6"></textarea>
+        <div class="glass-card p-8 w-full max-w-md border-indigo-500/30">
+            <div class="flex items-center gap-2 mb-2 text-indigo-400">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span class="text-[9px] font-black uppercase tracking-[0.2em]">Conversation Spark</span>
+            </div>
+            <h3 id="room-prompt" class="text-lg font-bold italic leading-snug mb-6 text-white">...</h3>
+            
+            <textarea id="post-text" placeholder="Share your thoughts..." class="w-full h-40 bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white text-sm mb-6 focus:border-indigo-500 transition-all"></textarea>
+            
             <div class="flex gap-3">
                 <button onclick="closeCreatePost()" class="flex-1 bg-white/5 p-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-slate-400">Cancel</button>
-                <button onclick="submitPost()" class="flex-1 bg-indigo-600 p-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-white shadow-lg">Post</button>
+                <button onclick="submitPost()" class="flex-1 bg-indigo-600 p-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-white shadow-lg shadow-indigo-500/20">Post</button>
             </div>
         </div>
     </div>
 
-    <!-- (EXISTING) SCREEN 2: INTERESTS -->
+    <!-- SCREEN 2: INTERESTS -->
     <section id="interests" class="screen pt-28 px-6 items-center">
         <div class="max-w-md w-full">
-            <h2 class="text-3xl font-bold mb-8 uppercase italic text-center">Interests</h2>
+            <div class="flex items-center gap-4 mb-8 justify-center">
+                <button onclick="showScreen('landing')" class="text-slate-500 hover:text-white"><i data-lucide="chevron-left"></i></button>
+                <h2 class="text-3xl font-bold uppercase italic">Interests</h2>
+            </div>
             <div class="glass-card p-6 mb-8 shadow-2xl focus-within:border-indigo-500/50 transition-all">
                 <div id="tag-container" class="flex flex-wrap gap-2 mb-4"></div>
                 <input id="tag-input" type="text" placeholder="Type (Cinema, F1, AI)..." class="w-full bg-transparent outline-none text-xl font-medium py-1 text-white">
@@ -129,10 +135,13 @@
         </div>
     </section>
 
-    <!-- (EXISTING) SCREEN 3: PREFERENCES -->
+    <!-- SCREEN 3: PREFERENCES -->
     <section id="preferences" class="screen pt-28 px-6 items-center pb-20">
         <div class="max-w-md w-full space-y-6">
-            <h2 class="text-3xl font-bold mb-4 text-center uppercase italic text-white">Fine-tune</h2>
+            <div class="flex items-center gap-4 mb-4 justify-center">
+                <button onclick="showScreen('interests')" class="text-slate-500 hover:text-white"><i data-lucide="chevron-left"></i></button>
+                <h2 class="text-3xl font-bold uppercase italic text-white">Fine-tune</h2>
+            </div>
             <div class="glass-card p-6">
                 <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 text-center">Status Filter</label>
                 <div class="grid grid-cols-3 gap-2">
@@ -152,7 +161,7 @@
         </div>
     </section>
 
-    <!-- (EXISTING) SCREEN 4: MATCHING -->
+    <!-- (PRESERVED) SCREEN 4 & 5: MATCHING & CHAT (OMITTED FROM VIEW FOR BREVITY, REMAINS IN SCRIPT) -->
     <section id="matching" class="screen items-center justify-center bg-black text-center p-6">
         <div class="relative w-56 h-56 flex items-center justify-center mb-12">
             <div class="absolute inset-0 border border-indigo-500/20 rounded-full radar-spin"></div>
@@ -163,11 +172,10 @@
         <button onclick="location.reload()" class="mt-20 px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:text-red-400 transition-all">Cancel</button>
     </section>
 
-    <!-- (EXISTING) SCREEN 5: CHAT -->
     <section id="chat" class="screen bg-black">
         <header class="h-20 border-b border-white/5 flex items-center justify-between px-6 glass-nav sticky top-0 z-20">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-xs">V</div>
+                <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-xs text-white">V</div>
                 <div class="font-bold text-sm italic uppercase tracking-tight text-white" id="chat-pref">Stranger</div>
             </div>
             <button onclick="skipChat()" class="bg-red-500/10 border border-red-500/20 text-red-500 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">Skip</button>
@@ -182,7 +190,6 @@
     </section>
 
     <script>
-        // --- FIREBASE INITIALIZATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyDjve9Lpih3Tl4mNGn1gxdZ6RQqONs7Bo4",
             authDomain: "vibe-78d6f.firebaseapp.com",
@@ -208,6 +215,15 @@
             'Relationship Advice', 'Experiences', 'Questions & Discussions'
         ];
 
+        const ROOM_PROMPTS = {
+            'Married & Curious': "What are you curious about but haven't talked about openly?",
+            'Relationship Advice': "What's something you're currently trying to figure out?",
+            'Questions & Discussions': "Ask the community something you've always wondered about.",
+            'Fantasy & Roleplay': "What's a scenario you've always wanted to explore?",
+            'First Experiences': "What was a first time that changed your perspective?",
+            'default': "Share your thoughts with the community..."
+        };
+
         window.showScreen = (id) => {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -216,7 +232,6 @@
             lucide.createIcons();
         };
 
-        // --- FEATURE 2: ROOMS ENGINE ---
         function renderRoomDirectory() {
             const container = document.getElementById('room-list');
             container.innerHTML = VIBE_ROOMS.map(room => `
@@ -235,10 +250,18 @@
             loadRoomPosts(roomName);
         };
 
+        window.openCreatePost = () => {
+            const prompt = ROOM_PROMPTS[activeRoomName] || ROOM_PROMPTS['default'];
+            document.getElementById('room-prompt').innerText = prompt;
+            document.getElementById('post-modal').classList.remove('hidden');
+            lucide.createIcons();
+        };
+
+        window.closeCreatePost = () => document.getElementById('post-modal').classList.add('hidden');
+
         function loadRoomPosts(roomName) {
             const container = document.getElementById('posts-container');
             container.innerHTML = '<p class="text-center text-[10px] uppercase font-bold text-slate-500 py-10 animate-pulse">Loading Feed...</p>';
-            
             db.ref(`room_posts/${roomName}`).limitToLast(20).on('value', snap => {
                 const posts = snap.val();
                 container.innerHTML = '';
@@ -250,165 +273,37 @@
                     const p = posts[id];
                     const div = document.createElement('div');
                     div.className = "glass-card p-5";
-                    div.innerHTML = `
-                        <p class="text-sm text-slate-300 leading-relaxed mb-4">${p.text}</p>
-                        <div class="flex items-center justify-between border-t border-white/5 pt-4">
-                            <div class="flex gap-4">
-                                <button onclick="reactPost('${id}', 'like')" class="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-indigo-400">
-                                    <i data-lucide="heart" class="w-3.5 h-3.5"></i> ${p.likes || 0}
-                                </button>
-                                <button class="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
-                                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 0
-                                </button>
-                            </div>
-                            <button onclick="reportPost('${id}')" class="text-[9px] font-black uppercase text-slate-600 tracking-widest">Report</button>
-                        </div>
-                    `;
+                    div.innerHTML = `<p class="text-sm text-slate-300 leading-relaxed mb-4">${p.text}</p><div class="flex items-center justify-between border-t border-white/5 pt-4"><div class="flex gap-4"><button onclick="reactPost('${id}', 'like')" class="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-indigo-400"><i data-lucide="heart" class="w-3.5 h-3.5"></i> ${p.likes || 0}</button></div><button onclick="reportPost('${id}')" class="text-[9px] font-black uppercase text-slate-600 tracking-widest">Report</button></div>`;
                     container.insertAdjacentElement('afterbegin', div);
                 }
                 lucide.createIcons();
             });
         }
 
-        window.openCreatePost = () => document.getElementById('post-modal').classList.remove('hidden');
-        window.closeCreatePost = () => document.getElementById('post-modal').classList.add('hidden');
-
         window.submitPost = () => {
             const text = document.getElementById('post-text').value.trim();
             if (!text) return;
-            db.ref(`room_posts/${activeRoomName}`).push({
-                uid: myId,
-                text: text,
-                time: firebase.database.ServerValue.TIMESTAMP,
-                likes: 0
-            });
+            db.ref(`room_posts/${activeRoomName}`).push({ uid: myId, text: text, time: firebase.database.ServerValue.TIMESTAMP, likes: 0 });
             document.getElementById('post-text').value = '';
             closeCreatePost();
         };
 
-        window.reactPost = (postId, type) => {
-            const ref = db.ref(`room_posts/${activeRoomName}/${postId}/likes`);
-            ref.transaction(count => (count || 0) + 1);
-        };
+        window.reactPost = (postId, type) => { db.ref(`room_posts/${activeRoomName}/${postId}/likes`).transaction(count => (count || 0) + 1); };
+        window.reportPost = (postId) => { db.ref('reports').push({ postId, room: activeRoomName, reporter: myId, time: Date.now() }); alert("Reported."); };
 
-        window.reportPost = (postId) => {
-            db.ref('reports').push({ postId, room: activeRoomName, reporter: myId, time: Date.now() });
-            alert("Post reported for moderation. Thank you.");
-        };
-
-        // --- PRESERVED MATCHMAKING FLOW (UNCHANGED) ---
+        // --- PRESERVED MATCHMAKING ---
         const tagInput = document.getElementById('tag-input');
-        tagInput.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter' && tagInput.value.trim()){
-                const val = tagInput.value.trim().toLowerCase();
-                if(!interests.includes(val)){ interests.push(val); renderTags(); }
-                tagInput.value = '';
-            }
-        });
-
-        function renderTags() {
-            const container = document.getElementById('tag-container');
-            container.innerHTML = interests.map(t => `<div class="bg-indigo-600 px-3 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-2">${t} <i data-lucide="x" class="w-3 h-3 cursor-pointer" onclick="removeTag('${t}')"></i></div>`).join('');
-            document.getElementById('next-to-prefs').disabled = interests.length < 1;
-            lucide.createIcons();
-        }
-
+        tagInput.addEventListener('keydown', (e) => { if(e.key === 'Enter' && tagInput.value.trim()){ const val = tagInput.value.trim().toLowerCase(); if(!interests.includes(val)){ interests.push(val); renderTags(); } tagInput.value = ''; } });
+        function renderTags() { const container = document.getElementById('tag-container'); container.innerHTML = interests.map(t => `<div class="bg-indigo-600 px-3 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-2">${t} <i data-lucide="x" class="w-3 h-3 cursor-pointer" onclick="removeTag('${t}')"></i></div>`).join(''); document.getElementById('next-to-prefs').disabled = interests.length < 1; lucide.createIcons(); }
         window.removeTag = (t) => { interests = interests.filter(i => i !== t); renderTags(); }
-        window.setPref = (type, val, btn) => {
-            prefs[type] = val;
-            btn.parentElement.parentElement.querySelectorAll('.pref-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        window.startMatching = () => {
-            currentRoom = null;
-            showScreen('matching');
-            const myNotifyRef = db.ref(`notif/${myId}`);
-            myNotifyRef.remove();
-            myNotifyRef.on('value', (snap) => {
-                const data = snap.val();
-                if (data && data.roomId) {
-                    myNotifyRef.off();
-                    db.ref('queue').child(myId).remove();
-                    joinChat(data.roomId, data.style);
-                }
-            });
-            db.ref('queue').once('value', (snap) => {
-                const users = snap.val();
-                let peer = null;
-                if (users) {
-                    for (let uid in users) {
-                        if (uid === myId) continue;
-                        const shared = (users[uid].interests || []).some(i => interests.includes(i));
-                        if (shared) { peer = uid; break; }
-                    }
-                }
-                if (peer) {
-                    const roomId = [myId, peer].sort().join('_');
-                    db.ref(`rooms/${roomId}/status`).set('active');
-                    db.ref(`rooms/${roomId}/messages`).remove();
-                    db.ref(`notif/${peer}`).set({ roomId, style: prefs.style });
-                    db.ref('queue').child(peer).remove();
-                    joinChat(roomId, prefs.style);
-                } else {
-                    db.ref('queue').child(myId).set({ interests, time: Date.now() });
-                }
-            });
-        };
-
-        function joinChat(roomId, style) {
-            currentRoom = roomId;
-            showScreen('chat');
-            document.getElementById('chat-pref').innerText = style + " Mode";
-            document.getElementById('chat-window').innerHTML = '';
-            document.getElementById('chat-input').disabled = false;
-            const msgRef = db.ref(`rooms/${roomId}/messages`);
-            msgRef.off();
-            msgRef.on('child_added', (snap) => {
-                const msg = snap.val();
-                addUI(msg.sender === myId ? 'me' : 'stranger', msg.text);
-            });
-            const statusRef = db.ref(`rooms/${roomId}/status`);
-            statusRef.on('value', (snap) => {
-                if (snap.val() === 'ended') {
-                    addUI('system', 'Stranger has left the wavelength.');
-                    document.getElementById('chat-input').disabled = true;
-                }
-            });
-        }
-
-        window.sendMessage = () => {
-            const input = document.getElementById('chat-input');
-            const val = input.value.trim();
-            if (!val || !currentRoom) return;
-            db.ref(`rooms/${currentRoom}/messages`).push({ sender: myId, text: val });
-            input.value = '';
-        };
-
-        window.skipChat = () => {
-            if (currentRoom) db.ref(`rooms/${currentRoom}/status`).set('ended');
-            setTimeout(() => location.reload(), 100);
-        };
-
-        function addUI(sender, text) {
-            const box = document.getElementById('chat-window');
-            const div = document.createElement('div');
-            if (sender === 'system') {
-                div.className = "flex flex-col items-center py-10 w-full";
-                div.innerHTML = `<div class="text-[9px] font-bold text-red-500 uppercase py-4 animate-pulse">${text}</div><button onclick="location.reload()" class="mt-4 bg-white text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase">Find New</button>`;
-            } else {
-                div.className = `max-w-[85%] px-4 py-2.5 text-sm font-medium ${sender === 'me' ? 'msg-me' : 'msg-them'}`;
-                div.innerText = text;
-            }
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
-        }
-
+        window.setPref = (type, val, btn) => { prefs[type] = val; btn.parentElement.parentElement.querySelectorAll('.pref-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+        window.startMatching = () => { currentRoom = null; showScreen('matching'); const myNotifyRef = db.ref(`notif/${myId}`); myNotifyRef.remove(); myNotifyRef.on('value', (snap) => { const data = snap.val(); if (data && data.roomId) { myNotifyRef.off(); db.ref('queue').child(myId).remove(); joinChat(data.roomId, data.style); } }); db.ref('queue').once('value', (snap) => { const users = snap.val(); let peer = null; if (users) { for (let uid in users) { if (uid === myId) continue; const shared = (users[uid].interests || []).some(i => interests.includes(i)); if (shared) { peer = uid; break; } } } if (peer) { const roomId = [myId, peer].sort().join('_'); db.ref(`rooms/${roomId}/status`).set('active'); db.ref(`rooms/${roomId}/messages`).remove(); db.ref(`notif/${peer}`).set({ roomId, style: prefs.style }); db.ref('queue').child(peer).remove(); joinChat(roomId, prefs.style); } else { db.ref('queue').child(myId).set({ interests, time: Date.now() }); } }); };
+        function joinChat(roomId, style) { currentRoom = roomId; showScreen('chat'); document.getElementById('chat-pref').innerText = style + " Mode"; document.getElementById('chat-window').innerHTML = ''; document.getElementById('chat-input').disabled = false; const msgRef = db.ref(`rooms/${roomId}/messages`); msgRef.off(); msgRef.on('child_added', (snap) => { const msg = snap.val(); addUI(msg.sender === myId ? 'me' : 'stranger', msg.text); }); const statusRef = db.ref(`rooms/${roomId}/status`); statusRef.on('value', (snap) => { if (snap.val() === 'ended') { addUI('system', 'Stranger has left the wavelength.'); document.getElementById('chat-input').disabled = true; } }); }
+        window.sendMessage = () => { const input = document.getElementById('chat-input'); const val = input.value.trim(); if (!val || !currentRoom) return; db.ref(`rooms/${currentRoom}/messages`).push({ sender: myId, text: val }); input.value = ''; };
+        window.skipChat = () => { if (currentRoom) db.ref(`rooms/${currentRoom}/status`).set('ended'); setTimeout(() => location.reload(), 100); };
+        function addUI(sender, text) { const box = document.getElementById('chat-window'); const div = document.createElement('div'); if (sender === 'system') { div.className = "flex flex-col items-center py-10 w-full"; div.innerHTML = `<div class="text-[9px] font-bold text-red-500 uppercase py-4 animate-pulse">${text}</div><button onclick="location.reload()" class="mt-4 bg-white text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase">Find New</button>`; } else { div.className = `max-w-[85%] px-4 py-2.5 text-sm font-medium ${sender === 'me' ? 'msg-me' : 'msg-them'}`; div.innerText = text; } box.appendChild(div); box.scrollTop = box.scrollHeight; }
         document.getElementById('chat-input').onkeydown = (e) => { if(e.key === 'Enter') sendMessage(); };
-        setInterval(() => {
-            const c = 2410 + Math.floor(Math.random() * 15);
-            document.getElementById('live-counter').innerText = c.toLocaleString() + " Live";
-        }, 5000);
+        setInterval(() => { const c = 2410 + Math.floor(Math.random() * 15); document.getElementById('live-counter').innerText = c.toLocaleString() + " Live"; }, 5000);
         lucide.createIcons();
     </script>
 </body>
