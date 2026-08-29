@@ -76,6 +76,10 @@
         onAuthStateChanged(auth, async (user) => {
             myUID = user ? user.uid : getMyUID();
 
+             // NEW: Clean up queue data as soon as we enter chat
+    remove(ref(db, `searching/${myUID}`));
+    remove(ref(db, `matches/${myUID}`));
+            
             if (roomId) {
                 // 1. Listen for messages
                 onChildAdded(ref(db, `rooms/${roomId}/messages`), (snap) => {
