@@ -1,97 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>VIBE | Matching</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radar | VIBE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap'); body{font-family:'Plus Jakarta Sans'; background:#000; color:white; overflow:hidden;}</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans'; background: #000; color: white; overflow: hidden; }
+        .radar-line {
+            position: absolute; width: 200%; height: 2px;
+            background: linear-gradient(90deg, transparent, #6366f1, transparent);
+            animation: sweep 4s linear infinite;
+        }
+        @keyframes sweep { from { transform: translateY(-100vh); } to { transform: translateY(100vh); } }
+    </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-6">
 
-    <div class="relative w-48 h-48 flex items-center justify-center mb-12">
-        <div class="absolute inset-0 border-2 border-indigo-500 rounded-full animate-ping opacity-20"></div>
-        <div class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl animate-spin [animation-duration:8s]">
-            <i data-lucide="zap" class="w-10 h-10 text-white"></i>
+    <div class="radar-line"></div>
+
+    <!-- RADAR VISUAL -->
+    <div class="relative w-64 h-64 flex items-center justify-center mb-12">
+        <div class="absolute inset-0 border border-white/5 rounded-full"></div>
+        <div class="absolute inset-10 border border-white/5 rounded-full"></div>
+        <div class="absolute inset-20 border border-white/5 rounded-full"></div>
+        <div class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center shadow-[0_0_50px_rgba(79,70,229,0.4)] animate-pulse">
+            <i data-lucide="zap" class="w-10 h-10 text-white fill-current"></i>
         </div>
     </div>
 
-    <h2 id="status-text" class="text-3xl font-black italic uppercase tracking-tighter mb-2">Searching...</h2>
-    <p id="debug-log" class="text-indigo-400 text-[10px] font-mono uppercase opacity-50 tracking-widest">Initializing...</p>
+    <div class="text-center z-20">
+        <h2 class="text-4xl font-black italic uppercase tracking-tighter mb-2">Scanning</h2>
+        <p id="debug-log" class="text-indigo-400 text-[10px] font-bold uppercase tracking-[0.3em]">Connecting to wavelength...</p>
+    </div>
 
-    <!-- CANCEL -->
-    <button onclick="window.cancelSearch()" class="fixed bottom-12 text-slate-500 text-xs font-bold uppercase tracking-widest hover:text-white">Cancel</button>
+    <!-- CANCEL BUTTON -->
+    <button id="cancel-btn" class="fixed bottom-12 px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
+        Cancel Search
+    </button>
 
     <script type="module">
-        import { db, auth, ref, set, onValue, remove, getMyUID, onAuthStateChanged, get, off } from './config.js';
+        import { db, auth, ref, set, onValue, remove, getMyUID, onAuthStateChanged, onDisconnect, off } from './config.js';
 
-        const log = (msg) => { document.getElementById('debug-log').innerText = msg; console.log(msg); };
+        const log = (msg) => document.getElementById('debug-log').innerText = msg;
 
         onAuthStateChanged(auth, async (user) => {
             const myUID = user ? user.uid : getMyUID();
             const myInterests = JSON.parse(localStorage.getItem('vibe_interests')) || ["General"];
             
-            log("ID: " + myUID + " | Interests: " + myInterests.join(','));
+            // 1. ATTACH CANCEL FUNCTION TO WINDOW (Fixes the button not working)
+            window.cancelSearch = async () => {
+                await remove(ref(db, `lobby/${myUID}`));
+                window.location.href = 'index.html';
+            };
+            document.getElementById('cancel-btn').onclick = window.cancelSearch;
 
-            // 1. Wipe any previous match pings
-            await remove(ref(db, `matches/${myUID}`));
+            // 2. CLEANUP: Start fresh
+            await remove(ref(db, `lobby/${myUID}`));
 
-            // 2. Watch for someone to match with ME
-            const matchPingRef = ref(db, `matches/${myUID}`);
-            onValue(matchPingRef, (snap) => {
-                const data = snap.val();
-                if(data && data.roomId) {
-                    log("MATCH RECEIVED! Redir...");
-                    off(matchPingRef);
-                    window.location.href = `chat.html?room=${data.roomId}&peer=${data.peerId}`;
-                }
+            // 3. SET PRESENCE IN LOBBY
+            const myLobbyRef = ref(db, `lobby/${myUID}`);
+            await set(myLobbyRef, {
+                id: myUID,
+                interests: myInterests,
+                status: 'searching',
+                timestamp: Date.now()
             });
 
-            // 3. Scan the "Waitlist" to see if a stranger is already there
-            const waitlistRef = ref(db, 'waitlist');
-            const snapshot = await get(waitlistRef);
+            // 4. AUTO-REMOVE ON DISCONNECT (Ghost prevention)
+            onDisconnect(myLobbyRef).remove();
 
-            let foundPeer = null;
-            if(snapshot.exists()) {
-                const users = snapshot.val();
-                for (let uid in users) {
-                    if (uid === myUID) continue;
-                    // Matching Logic: Shared Interests?
-                    const peerInterests = users[uid].interests || [];
-                    const common = peerInterests.filter(i => myInterests.includes(i));
-                    
-                    if (common.length > 0) {
-                        foundPeer = { uid, ...users[uid] };
-                        break; 
-                    }
+            // 5. THE MATCHMAKING ENGINE
+            onValue(ref(db, 'lobby'), (snap) => {
+                const users = snap.val();
+                if (!users) return;
+
+                // Check if I was matched by someone else (Joiner path)
+                if (users[myUID] && users[myUID].match) {
+                    const match = users[myUID].match;
+                    off(ref(db, 'lobby')); // Stop listening
+                    window.location.href = `chat.html?room=${match.roomId}&peer=${match.peerId}`;
+                    return;
                 }
-            }
 
-            if(foundPeer) {
-                log("FOUND STRANGER: " + foundPeer.uid);
-                const roomId = [myUID, foundPeer.uid].sort().join('_');
+                // Try to find someone else (Creator path)
+                Object.keys(users).forEach(peerId => {
+                    if (peerId === myUID) return;
+                    const peer = users[peerId];
+                    
+                    if (peer.status === 'searching') {
+                        // Matching logic: check common interests
+                        const common = peer.interests.filter(i => myInterests.includes(i));
+                        
+                        if (common.length > 0) {
+                            const roomId = [myUID, peerId].sort().join('_');
+                            log("Match found! Synchronizing...");
 
-                // A. Remove them from waitlist so no one else grabs them
-                await remove(ref(db, `waitlist/${foundPeer.uid}`));
-
-                // B. Ping THEM with the match
-                await set(ref(db, `matches/${foundPeer.uid}`), { roomId, peerId: myUID });
-
-                // C. Join the chat myself
-                window.location.href = `chat.html?room=${roomId}&peer=${foundPeer.uid}`;
-            } else {
-                log("WAITING IN LOBBY...");
-                // No one found? Put myself on the waitlist
-                await set(ref(db, `waitlist/${myUID}`), {
-                    interests: myInterests,
-                    time: Date.now()
+                            // Tell peer they are matched
+                            set(ref(db, `lobby/${peerId}/match`), { roomId, peerId: myUID });
+                            // Tell self I am matched
+                            set(ref(db, `lobby/${myUID}/match`), { roomId, peerId: peerId });
+                            // Update status to prevent double matching
+                            set(ref(db, `lobby/${peerId}/status`), 'matched');
+                            set(ref(db, `lobby/${myUID}/status`), 'matched');
+                        }
+                    }
                 });
-            }
+            });
         });
-
-        window.cancelSearch = () => {
-            localStorage.removeItem('vibe_temp_id'); // Optional: reset ID on cancel
-            window.location.href = 'index.html';
-        };
 
         lucide.createIcons();
     </script>
