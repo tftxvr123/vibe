@@ -3,157 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIBE | Meet on your wavelength</title>
+    <title>VIBE | Wavelength Matching</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        :root { --accent: #6366f1; --bg: #030712; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: #fff; overflow-x: hidden; }
-
-        /* Modern Mesh Background */
-        .mesh-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: 
-                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.1) 0px, transparent 50%),
-                radial-gradient(at 50% 100%, rgba(79, 70, 229, 0.1) 0px, transparent 50%);
-            background-color: #020617;
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #000; 
+            color: #fff; 
+            overflow-x: hidden; 
         }
 
-        /* Subtle Noise Texture */
+        /* Industrial Background */
+        .pro-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #000 70%);
+        }
+
+        /* Grain Texture Overlay */
         .noise {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            opacity: 0.03; pointer-events: none;
+            opacity: 0.05; pointer-events: none;
             background-image: url('https://grainy-gradients.vercel.app/noise.svg');
         }
 
-        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .bento-card { transition: all 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(255, 255, 255, 0.01); }
-        .bento-card:hover { background: rgba(255, 255, 255, 0.03); border-color: rgba(99, 102, 241, 0.3); transform: translateY(-2px); }
-        
-        .hero-text { font-size: clamp(3rem, 10vw, 6rem); line-height: 0.9; letter-spacing: -0.04em; }
-        .btn-premium { background: #fff; color: #000; box-shadow: 0 0 30px rgba(255,255,255,0.1); transition: all 0.2s ease; }
-        .btn-premium:hover { transform: scale(1.02); box-shadow: 0 0 40px rgba(99, 102, 241, 0.4); background: #6366f1; color: #fff; }
+        /* Bento Card System */
+        .bento-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            transition: border 0.3s ease;
+        }
+        .bento-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        /* Typography Hierarchy */
+        .hero-text {
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            line-height: 0.95;
+            letter-spacing: -0.05em;
+            font-weight: 800;
+        }
+
+        /* Minimal CTA */
+        .btn-pro {
+            background: #fff;
+            color: #000;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-pro:hover {
+            transform: translateY(-2px);
+            background: #6366f1;
+            color: #fff;
+            box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.5);
+        }
+
+        .text-muted { color: #94a3b8; }
+        .accent-text { color: #818cf8; }
     </style>
 </head>
 <body>
 
-    <div class="mesh-bg"></div>
+    <div class="pro-bg"></div>
     <div class="noise"></div>
 
-    <!-- NAV -->
-    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-[#020617]/50 backdrop-blur-xl h-20 flex items-center justify-between px-6 md:px-12">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xl shadow-indigo-600/20">
-                <i data-lucide="zap" class="w-6 h-6 fill-current"></i>
+    <!-- MINIMAL NAV -->
+    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-md h-16 flex items-center justify-between px-6 md:px-12">
+        <div class="flex items-center gap-2">
+            <div class="w-7 h-7 bg-indigo-600 rounded flex items-center justify-center text-white">
+                <i data-lucide="zap" class="w-4 h-4 fill-current"></i>
             </div>
-            <span class="text-2xl font-black italic tracking-tighter">VIBE</span>
+            <span class="text-lg font-bold tracking-tighter uppercase italic">VIBE</span>
         </div>
         <div id="nav-actions" class="flex items-center gap-6">
-            <a href="auth.html" class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-400 transition-colors">Login</a>
-            <a href="interests.html" class="hidden md:block bg-white/5 border border-white/10 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-white/10">Start Vibing</a>
+            <a href="auth.html" class="text-[10px] font-bold uppercase tracking-[0.2em] text-muted hover:text-white transition-colors">Sign In</a>
+            <a href="interests.html" class="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all">Join Lobby</a>
         </div>
     </nav>
 
-    <!-- MAIN SECTION -->
-    <main class="pt-40 pb-20 px-6 max-w-7xl mx-auto">
+    <main class="pt-32 pb-20 px-6 max-w-6xl mx-auto">
         
-        <!-- HERO -->
-        <div class="text-center mb-24">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-8">
-                🇮🇳 LIVE ACROSS INDIA
+        <!-- HERO SECTION -->
+        <div class="mb-24">
+            <div class="flex items-center gap-2 mb-8">
+                <span class="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[9px] font-bold uppercase tracking-widest rounded">Network Live</span>
+                <span class="text-[9px] font-bold text-muted uppercase tracking-widest">Across India</span>
             </div>
-            <h1 class="hero-text font-black mb-8">
-                Meet on your <br/>
-                <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">wavelength.</span>
+            <h1 class="hero-text mb-8">
+                MEET ON YOUR <br/>
+                <span class="accent-text italic">WAVELENGTH.</span>
             </h1>
-            <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
-                Skip the swiping. Stop the small talk. Vibe connects you with strangers who share your specific interests, instantly and anonymously.
+            <p class="text-muted text-lg md:text-xl max-w-xl mb-12 font-medium leading-relaxed">
+                A professional-grade anonymous chat engine. Connect with strangers through shared interests, not luck.
             </p>
-            <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
-                <a href="interests.html" class="btn-premium px-12 py-5 rounded-2xl font-black text-xl uppercase tracking-tighter w-full md:w-auto">
-                    Start Vibing Now
+            <div class="flex flex-col md:flex-row gap-6 items-center">
+                <a href="interests.html" class="btn-pro px-10 py-4 rounded-xl font-bold text-base uppercase tracking-tighter w-full md:w-auto text-center">
+                    Start vibing
                 </a>
-                <div class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/5 border border-white/5">
-                    <div class="flex -space-x-3">
-                        <div class="w-8 h-8 rounded-full border-2 border-[#020617] bg-indigo-500 flex items-center justify-center text-[10px] font-bold">A</div>
-                        <div class="w-8 h-8 rounded-full border-2 border-[#020617] bg-purple-500 flex items-center justify-center text-[10px] font-bold">R</div>
-                        <div class="w-8 h-8 rounded-full border-2 border-[#020617] bg-pink-500 flex items-center justify-center text-[10px] font-bold">S</div>
+                <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-muted">
+                    <div class="flex -space-x-2">
+                        <div class="w-6 h-6 rounded-full border-2 border-black bg-slate-800"></div>
+                        <div class="w-6 h-6 rounded-full border-2 border-black bg-slate-700"></div>
+                        <div class="w-6 h-6 rounded-full border-2 border-black bg-slate-600"></div>
                     </div>
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest"><span class="text-white" id="live-count">2,410</span> Vibing</span>
+                    <span><span class="text-white" id="live-count">2,410</span> users online</span>
                 </div>
             </div>
         </div>
 
-        <!-- BENTO GRID (FILLING THE SPACE) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-24">
-            <!-- Card 1: Trending -->
-            <div class="md:col-span-2 bento-card p-8 rounded-[2.5rem]">
-                <div class="flex justify-between items-start mb-12">
-                    <div>
-                        <h3 class="text-xl font-bold italic uppercase tracking-tight">Trending Wavelengths</h3>
-                        <p class="text-xs text-slate-500 uppercase font-bold tracking-widest mt-1">What India is talking about</p>
+        <!-- INDUSTRIAL BENTO GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-24">
+            
+            <!-- Trending (Main Card) -->
+            <div class="md:col-span-8 bento-card p-10 flex flex-col justify-between min-h-[300px]">
+                <div>
+                    <h3 class="text-xs font-bold text-muted uppercase tracking-[0.3em] mb-8">Global Trending</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#UPSCPrep</span>
+                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#F1India</span>
+                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#SaaSFounders</span>
+                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#AnimeDiscussion</span>
+                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#BangaloreFoodies</span>
                     </div>
-                    <i data-lucide="trending-up" class="text-indigo-500 w-5 h-5"></i>
                 </div>
-                <div class="flex flex-wrap gap-3">
-                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#CricketWorldCup</span>
-                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#UPSCPrep</span>
-                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#MalayalamCinema</span>
-                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#StartupLife</span>
-                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#DeepTalk</span>
-                    <span class="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-sm font-bold hover:bg-indigo-600 transition-colors cursor-default">#AnimeIndia</span>
-                </div>
-            </div>
-
-            <!-- Card 2: Stats -->
-            <div class="bento-card p-8 rounded-[2.5rem] bg-indigo-600/10 border-indigo-500/20">
-                <h3 class="text-xl font-bold italic uppercase tracking-tight mb-8">Daily Activity</h3>
-                <div class="space-y-6">
-                    <div>
-                        <div class="text-3xl font-black italic">14,201</div>
-                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Matches Today</div>
-                    </div>
-                    <div>
-                        <div class="text-3xl font-black italic">89%</div>
-                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Wavelength Accuracy</div>
-                    </div>
+                <div class="text-[10px] text-muted font-bold uppercase tracking-widest flex items-center gap-2">
+                    <i data-lucide="line-chart" class="w-3 h-3"></i> Updated 2 mins ago
                 </div>
             </div>
 
-            <!-- Card 3: Security -->
-            <div class="bento-card p-8 rounded-[2.5rem]">
-                <i data-lucide="shield" class="text-indigo-500 mb-6"></i>
-                <h3 class="text-lg font-bold mb-2">Completely Private</h3>
-                <p class="text-sm text-slate-400 leading-relaxed font-medium">No phone numbers. No real names. Your identity is hidden until you choose to reveal it.</p>
+            <!-- Stats (Side Card) -->
+            <div class="md:col-span-4 bento-card p-10 bg-indigo-900/5">
+                <h3 class="text-xs font-bold text-muted uppercase tracking-[0.3em] mb-12">Engine Stats</h3>
+                <div class="space-y-8">
+                    <div>
+                        <div class="text-4xl font-bold tracking-tighter">1.2s</div>
+                        <div class="text-[9px] font-bold text-muted uppercase tracking-widest mt-1">Avg. Match Time</div>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold tracking-tighter">14k+</div>
+                        <div class="text-[9px] font-bold text-muted uppercase tracking-widest mt-1">Matches / Day</div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Card 4: Friends -->
-            <div class="bento-card p-8 rounded-[2.5rem]">
-                <i data-lucide="users" class="text-purple-500 mb-6"></i>
-                <h3 class="text-lg font-bold mb-2">Build Your Circle</h3>
-                <p class="text-sm text-slate-400 leading-relaxed font-medium">Loved the conversation? Add them as a friend to chat anytime. (Registered users only)</p>
+            <!-- Security (Small) -->
+            <div class="md:col-span-4 bento-card p-8">
+                <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-6 border border-white/10 text-indigo-400">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-bold text-sm uppercase tracking-tight mb-2 text-white">End-to-End Privacy</h3>
+                <p class="text-xs text-muted leading-relaxed">Encrypted sessions with zero data retention. Your chat stays between you.</p>
             </div>
 
-            <!-- Card 5: Regions -->
-            <div class="bento-card p-8 rounded-[2.5rem]">
-                <i data-lucide="map-pin" class="text-pink-500 mb-6"></i>
-                <h3 class="text-lg font-bold mb-2">Truly Indian</h3>
-                <p class="text-sm text-slate-400 leading-relaxed font-medium">Connecting users from Mumbai to Kochi. Local vibes, global quality.</p>
+            <!-- Global (Small) -->
+            <div class="md:col-span-4 bento-card p-8">
+                <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-6 border border-white/10 text-emerald-400">
+                    <i data-lucide="globe" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-bold text-sm uppercase tracking-tight mb-2 text-white">Pan-India Access</h3>
+                <p class="text-xs text-muted leading-relaxed">Optimized servers in Mumbai for low-latency real-time conversations.</p>
+            </div>
+
+            <!-- Account (Small) -->
+            <div class="md:col-span-4 bento-card p-8">
+                <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-6 border border-white/10 text-amber-400">
+                    <i data-lucide="user-plus" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-bold text-sm uppercase tracking-tight mb-2 text-white">Wavelength Profiles</h3>
+                <p class="text-xs text-muted leading-relaxed">Save your interests and build a permanent circle of trusted friends.</p>
             </div>
         </div>
 
         <!-- FOOTER -->
-        <footer class="border-t border-white/5 pt-12 text-center">
-            <div class="flex justify-center gap-8 mb-8 text-slate-500 text-xs font-bold uppercase tracking-widest">
-                <a href="#" class="hover:text-white">Safety</a>
-                <a href="#" class="hover:text-white">Privacy</a>
-                <a href="#" class="hover:text-white">Terms</a>
-                <a href="#" class="hover:text-white">Contact</a>
+        <footer class="pt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-white/5">
+            <div class="flex gap-8 text-[9px] font-bold text-muted uppercase tracking-[0.2em]">
+                <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                <a href="#" class="hover:text-white transition-colors">Safety Guidelines</a>
+                <a href="#" class="hover:text-white transition-colors">Terms</a>
             </div>
-            <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest">&copy; 2025 VIBE India. All rights reserved.</p>
+            <p class="text-[9px] font-bold text-muted uppercase tracking-[0.2em]">&copy; 2025 VIBE Labs. All rights reserved.</p>
         </footer>
 
     </main>
@@ -165,19 +197,19 @@
             const actions = document.getElementById('nav-actions');
             if (user) {
                 actions.innerHTML = `
-                    <a href="social.html" class="text-slate-400 hover:text-white transition-colors"><i data-lucide="users" class="w-5 h-5"></i></a>
-                    <button id="logout-btn" class="text-xs font-bold uppercase tracking-widest text-red-500">Logout</button>
+                    <a href="social.html" class="text-muted hover:text-white transition-colors"><i data-lucide="users" class="w-5 h-5"></i></a>
+                    <button id="logout-btn" class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500">Logout</button>
                 `;
                 document.getElementById('logout-btn').onclick = logoutUser;
             }
             lucide.createIcons();
         });
 
-        // Simulate Live Counter
+        // Dynamic Number Simulation
         setInterval(() => {
-            const count = 2410 + Math.floor(Math.random() * 20);
+            const count = 2410 + Math.floor(Math.random() * 15);
             document.getElementById('live-count').innerText = count.toLocaleString();
-        }, 3000);
+        }, 4000);
 
         lucide.createIcons();
     </script>
