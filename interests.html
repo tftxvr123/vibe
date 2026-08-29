@@ -1,71 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>Interests | VIBE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup | VIBE</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #000; color: #fff; }
+        .pro-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #000 70%); }
+        .tag-pill { background: #6366f1; animation: pop 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        input::placeholder { color: rgba(255, 255, 255, 0.2); }
+    </style>
 </head>
-    <!-- NAV HEADER -->
-<nav class="fixed top-0 w-full z-50 bg-[#020617]/80 backdrop-blur-md border-b border-white/5 h-16 flex items-center justify-between px-6">
-    <div class="flex items-center gap-4">
-        <!-- Back Button -->
-        <button onclick="history.back()" class="text-slate-400 hover:text-white transition-colors">
-            <i data-lucide="arrow-left" class="w-5 h-5"></i>
-        </button>
-        <!-- Home Link -->
-        <a href="index.html" class="flex items-center gap-2 font-black italic text-lg tracking-tighter">
-            <div class="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center"><i data-lucide="zap" class="w-4 h-4 fill-current"></i></div>
-            VIBE
-        </a>
-    </div>
-    
-    <div id="nav-user-actions" class="flex items-center gap-4">
-        <!-- Will be filled by JavaScript -->
-    </div>
-</nav>
+<body class="min-h-screen">
+    <div class="pro-bg"></div>
 
-<script type="module">
-    import { auth, onAuthStateChanged, logoutUser } from './config.js';
-    
-    // Listen for Auth State
-    onAuthStateChanged(auth, (user) => {
-        const actionArea = document.getElementById('nav-user-actions');
-        if (user) {
-            actionArea.innerHTML = `
-                <a href="social.html" class="text-slate-400 hover:text-white"><i data-lucide="users" class="w-5 h-5"></i></a>
-                <button id="logout-btn" class="text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-400">Logout</button>
-            `;
-            document.getElementById('logout-btn').onclick = logoutUser;
-        } else {
-            actionArea.innerHTML = `<a href="auth.html" class="text-xs font-bold uppercase tracking-widest text-indigo-400">Login</a>`;
-        }
-        lucide.createIcons();
-    });
-</script>
-<body class="bg-[#020617] text-white p-6 pt-32">
-    <div class="max-w-md mx-auto">
-        <h2 class="text-4xl font-black mb-10">What's your vibe?</h2>
-        <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
-            <div id="tag-container" class="flex flex-wrap gap-2 mb-4"></div>
-            <input id="tag-input" type="text" placeholder="Add an interest..." class="w-full bg-transparent outline-none text-xl">
+    <!-- MINIMAL NAV -->
+    <nav class="h-16 flex items-center justify-between px-6 md:px-12 border-b border-white/5 bg-black/50 backdrop-blur-md">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="location.href='index.html'">
+            <div class="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center text-white"><i data-lucide="zap" class="w-3.5 h-3.5 fill-current"></i></div>
+            <span class="text-sm font-bold tracking-tighter uppercase italic">VIBE</span>
         </div>
-        <button id="next-btn" disabled onclick="location.href='prefs.html'" class="w-full mt-10 bg-indigo-600 py-5 rounded-2xl font-bold opacity-20">CONTINUE</button>
-    </div>
+        <div class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Step 01 / 03</div>
+    </nav>
+
+    <main class="max-w-2xl mx-auto pt-24 px-6 pb-40">
+        <div class="mb-12">
+            <h1 class="text-4xl font-extrabold tracking-tighter mb-4 italic uppercase">What's your <br><span class="text-indigo-400">wavelength?</span></h1>
+            <p class="text-slate-400 text-sm font-medium">Type any interest. We'll find someone who matches your frequency.</p>
+        </div>
+
+        <!-- INPUT CENTERPIECE -->
+        <div class="bg-white/5 border border-white/10 rounded-3xl p-8 focus-within:border-indigo-500/50 transition-all shadow-2xl">
+            <div id="tag-container" class="flex flex-wrap gap-2 mb-6"></div>
+            <input id="tag-input" type="text" placeholder="Type and hit Enter..." class="w-full bg-transparent outline-none text-2xl font-bold text-white tracking-tight">
+        </div>
+
+        <!-- SUGGESTED SECTION (Fills the space) -->
+        <div class="mt-16">
+            <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mb-6">Popular Wavelengths</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="window.addTag('Deep Talk')" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left hover:bg-white/10 transition-all">
+                    <div class="text-xs font-bold mb-1 italic">#DeepTalk</div>
+                    <div class="text-[9px] text-slate-500 uppercase font-bold">1.2k Online</div>
+                </button>
+                <button onclick="window.addTag('Startup Life')" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left hover:bg-white/10 transition-all">
+                    <div class="text-xs font-bold mb-1 italic">#StartupLife</div>
+                    <div class="text-[9px] text-slate-500 uppercase font-bold">840 Online</div>
+                </button>
+                <button onclick="window.addTag('Anime')" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left hover:bg-white/10 transition-all">
+                    <div class="text-xs font-bold mb-1 italic">#Anime</div>
+                    <div class="text-[9px] text-slate-500 uppercase font-bold">2.4k Online</div>
+                </button>
+                <button onclick="window.addTag('Gaming')" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left hover:bg-white/10 transition-all">
+                    <div class="text-xs font-bold mb-1 italic">#Gaming</div>
+                    <div class="text-[9px] text-slate-500 uppercase font-bold">3.1k Online</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- STICKY FOOTER CTA -->
+        <div class="fixed bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black via-black to-transparent flex justify-center">
+            <button id="next-btn" disabled onclick="location.href='prefs.html'" class="w-full max-w-md bg-white text-black py-5 rounded-2xl font-black text-sm uppercase tracking-[0.2em] disabled:opacity-10 transition-all shadow-2xl">
+                Continue to Filters
+            </button>
+        </div>
+    </main>
+
     <script>
         let tags = [];
         const input = document.getElementById('tag-input');
-        input.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter' && input.value.trim()){
-                tags.push(input.value.trim().toLowerCase());
-                input.value = '';
+        
+        window.addTag = (val) => {
+            const cleanVal = val.trim().toLowerCase();
+            if(cleanVal && !tags.includes(cleanVal)) {
+                tags.push(cleanVal);
                 render();
             }
+            input.value = '';
+        };
+
+        input.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') window.addTag(input.value);
         });
+
         function render() {
-            document.getElementById('tag-container').innerHTML = tags.map(t => `<span class="bg-indigo-600 px-3 py-1 rounded-lg text-xs font-bold">${t}</span>`).join(' ');
+            document.getElementById('tag-container').innerHTML = tags.map(t => `
+                <div class="tag-pill px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-tight flex items-center gap-2">
+                    ${t} <button onclick="removeTag('${t}')"><i data-lucide="x" class="w-3 h-3"></i></button>
+                </div>
+            `).join('');
             document.getElementById('next-btn').disabled = tags.length < 1;
-            document.getElementById('next-btn').style.opacity = tags.length < 1 ? "0.2" : "1";
             localStorage.setItem('vibe_interests', JSON.stringify(tags));
+            lucide.createIcons();
         }
+
+        window.removeTag = (t) => {
+            tags = tags.filter(x => x !== t);
+            render();
+        }
+        lucide.createIcons();
     </script>
 </body>
 </html>
