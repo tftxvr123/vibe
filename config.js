@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, set, onValue, push, onChildAdded, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDjve9Lpih3Tl4mNGn1gxdZ6RQqONs7Bo4",
@@ -15,10 +15,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-export { db, auth, ref, set, onValue, push, onChildAdded, remove, get, onAuthStateChanged, signOut };
+export { db, auth, googleProvider, signInWithPopup, ref, set, onValue, push, onChildAdded, remove, get, onAuthStateChanged, signOut };
 
-// Utility to generate/get a persistent anonymous ID if not logged in
 export const getMyUID = () => {
     let id = localStorage.getItem('vibe_temp_id');
     if (!id) {
