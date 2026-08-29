@@ -2,214 +2,297 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIBE | Wavelength Matching</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VIBE | Meet on your wavelength</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Firebase App (the core SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <!-- Firebase Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #000; 
-            color: #fff; 
-            overflow-x: hidden; 
-        }
-
-        /* Industrial Background */
-        .pro-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #000 70%);
-        }
-
-        /* Grain Texture Overlay */
-        .noise {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            opacity: 0.05; pointer-events: none;
-            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
-        }
-
-        /* Bento Card System */
-        .bento-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            transition: border 0.3s ease;
-        }
-        .bento-card:hover {
-            border-color: rgba(99, 102, 241, 0.5);
-        }
-
-        /* Typography Hierarchy */
-        .hero-text {
-            font-size: clamp(2.5rem, 8vw, 5.5rem);
-            line-height: 0.95;
-            letter-spacing: -0.05em;
-            font-weight: 800;
-        }
-
-        /* Minimal CTA */
-        .btn-pro {
-            background: #fff;
-            color: #000;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .btn-pro:hover {
-            transform: translateY(-2px);
-            background: #6366f1;
-            color: #fff;
-            box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.5);
-        }
-
-        .text-muted { color: #94a3b8; }
-        .accent-text { color: #818cf8; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #000; color: #fff; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        .screen { display: none; min-height: 100vh; flex-direction: column; }
+        .screen.active { display: flex; }
+        .glass-nav { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; }
+        .pref-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; }
+        .pref-btn.active { background: #6366f1; border-color: #818cf8; color: white; box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+        .msg-me { background: #6366f1; border-radius: 1.25rem 1.25rem 0 1.25rem; align-self: flex-end; }
+        .msg-them { background: #1e293b; border-radius: 1.25rem 1.25rem 1.25rem 0; align-self: flex-start; }
+        @keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .radar-spin { animation: sweep 4s linear infinite; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="pro-bg"></div>
-    <div class="noise"></div>
-
-    <!-- MINIMAL NAV -->
-    <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-md h-16 flex items-center justify-between px-6 md:px-12">
-        <div class="flex items-center gap-2">
-            <div class="w-7 h-7 bg-indigo-600 rounded flex items-center justify-center text-white">
-                <i data-lucide="zap" class="w-4 h-4 fill-current"></i>
-            </div>
-            <span class="text-lg font-bold tracking-tighter uppercase italic">VIBE</span>
+    <!-- 1. LANDING SCREEN -->
+    <section id="landing" class="screen active pt-32 px-6 items-center text-center">
+        <nav class="fixed top-0 w-full h-16 glass-nav flex items-center justify-between px-6 z-50">
+            <div class="flex items-center gap-2 font-black italic text-xl text-indigo-500">VIBE</div>
+            <div id="auth-status" class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Live India 🇮🇳</div>
+        </nav>
+        <div class="max-w-2xl mt-20">
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-none mb-6 uppercase italic">Meet on your <br><span class="text-indigo-500">wavelength.</span></h1>
+            <p class="text-slate-400 text-lg mb-12">Anonymous, interest-based chat for the next generation.</p>
+            <button onclick="showScreen('interests')" class="bg-indigo-600 text-white px-12 py-5 rounded-2xl font-black text-xl shadow-2xl hover:scale-105 transition-all">START VIBING</button>
         </div>
-        <div id="nav-actions" class="flex items-center gap-6">
-            <a href="auth.html" class="text-[10px] font-bold uppercase tracking-[0.2em] text-muted hover:text-white transition-colors">Sign In</a>
-            <a href="interests.html" class="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all">Join Lobby</a>
-        </div>
-    </nav>
+    </section>
 
-    <main class="pt-32 pb-20 px-6 max-w-6xl mx-auto">
-        
-        <!-- HERO SECTION -->
-        <div class="mb-24">
-            <div class="flex items-center gap-2 mb-8">
-                <span class="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[9px] font-bold uppercase tracking-widest rounded">Network Live</span>
-                <span class="text-[9px] font-bold text-muted uppercase tracking-widest">Across India</span>
+    <!-- 2. INTERESTS SCREEN -->
+    <section id="interests" class="screen pt-24 px-6 items-center">
+        <div class="max-w-md w-full">
+            <h2 class="text-3xl font-bold mb-8 tracking-tight italic uppercase text-center">What's your vibe?</h2>
+            <div class="glass-card p-6 mb-10 shadow-2xl">
+                <div id="tag-container" class="flex flex-wrap gap-2 mb-4"></div>
+                <input id="tag-input" type="text" placeholder="Add an interest (e.g. F1, Cinema)..." class="w-full bg-transparent outline-none text-lg text-white">
             </div>
-            <h1 class="hero-text mb-8">
-                MEET ON YOUR <br/>
-                <span class="accent-text italic">WAVELENGTH.</span>
-            </h1>
-            <p class="text-muted text-lg md:text-xl max-w-xl mb-12 font-medium leading-relaxed">
-                A professional-grade anonymous chat engine. Connect with strangers through shared interests, not luck.
-            </p>
-            <div class="flex flex-col md:flex-row gap-6 items-center">
-                <a href="interests.html" class="btn-pro px-10 py-4 rounded-xl font-bold text-base uppercase tracking-tighter w-full md:w-auto text-center">
-                    Start vibing
-                </a>
-                <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-muted">
-                    <div class="flex -space-x-2">
-                        <div class="w-6 h-6 rounded-full border-2 border-black bg-slate-800"></div>
-                        <div class="w-6 h-6 rounded-full border-2 border-black bg-slate-700"></div>
-                        <div class="w-6 h-6 rounded-full border-2 border-black bg-slate-600"></div>
-                    </div>
-                    <span><span class="text-white" id="live-count">2,410</span> users online</span>
+            <button id="next-to-prefs" disabled onclick="showScreen('preferences')" class="w-full bg-indigo-600 py-5 rounded-2xl font-black text-lg disabled:opacity-20 transition-all uppercase">Continue</button>
+            <button onclick="showScreen('landing')" class="w-full mt-4 text-slate-500 font-bold uppercase text-[10px] tracking-widest">Back</button>
+        </div>
+    </section>
+
+    <!-- 3. PREFERENCES SCREEN -->
+    <section id="preferences" class="screen pt-24 px-6 items-center">
+        <div class="max-w-md w-full space-y-6">
+            <h2 class="text-3xl font-bold mb-8 tracking-tight italic uppercase text-center">Fine-tune</h2>
+            <div class="glass-card p-6">
+                <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 tracking-widest">Marital Status</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="setPref('marital', 'Single', this)" class="pref-btn active p-3 rounded-xl font-bold text-[10px] uppercase">Single</button>
+                    <button onclick="setPref('marital', 'Married', this)" class="pref-btn p-3 rounded-xl font-bold text-[10px] uppercase">Married</button>
+                    <button onclick="setPref('marital', 'Divorced', this)" class="pref-btn p-3 rounded-xl font-bold text-[10px] uppercase">Divorced</button>
                 </div>
             </div>
+            <div class="glass-card p-6">
+                <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 tracking-widest">Conversation Style</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setPref('style', 'Deep Talk', this)" class="pref-btn active p-3 rounded-xl font-bold text-[10px] uppercase">Deep Talk</button>
+                    <button onclick="setPref('style', 'Deep Naughty', this)" class="pref-btn p-3 rounded-xl font-bold text-[10px] uppercase">Deep Naughty</button>
+                </div>
+            </div>
+            <button onclick="startMatching()" class="w-full bg-indigo-600 py-5 rounded-2xl font-black text-lg shadow-xl uppercase">Find My Match</button>
         </div>
+    </section>
 
-        <!-- INDUSTRIAL BENTO GRID -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-24">
-            
-            <!-- Trending (Main Card) -->
-            <div class="md:col-span-8 bento-card p-10 flex flex-col justify-between min-h-[300px]">
+    <!-- 4. MATCHING SCREEN -->
+    <section id="matching" class="screen items-center justify-center bg-black text-center">
+        <div class="relative w-64 h-64 flex items-center justify-center">
+            <div class="absolute inset-0 border-2 border-indigo-500/20 rounded-full radar-spin"></div>
+            <div class="absolute inset-10 border-2 border-indigo-500/10 rounded-full radar-spin" style="animation-direction: reverse;"></div>
+            <div class="w-20 h-20 bg-indigo-600 rounded-[2rem] flex items-center justify-center shadow-[0_0_50px_rgba(79,70,229,0.5)]">
+                <i data-lucide="compass" class="w-10 h-10 animate-pulse"></i>
+            </div>
+        </div>
+        <h2 class="text-3xl font-black italic uppercase tracking-tighter mt-12 mb-2">Scanning...</h2>
+        <p class="text-indigo-400 text-[10px] font-bold uppercase tracking-[0.4em] animate-pulse">Synchronizing Wavelengths</p>
+        <button onclick="cancelSearch()" class="mt-20 px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-red-500 transition-all">Cancel Search</button>
+    </section>
+
+    <!-- 5. CHAT SCREEN -->
+    <section id="chat" class="screen bg-black">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-6 glass-nav sticky top-0 z-20">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-bold">V</div>
                 <div>
-                    <h3 class="text-xs font-bold text-muted uppercase tracking-[0.3em] mb-8">Global Trending</h3>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#UPSCPrep</span>
-                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#F1India</span>
-                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#SaaSFounders</span>
-                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#AnimeDiscussion</span>
-                        <span class="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-xs font-bold hover:border-indigo-500 transition-colors cursor-default">#BangaloreFoodies</span>
-                    </div>
-                </div>
-                <div class="text-[10px] text-muted font-bold uppercase tracking-widest flex items-center gap-2">
-                    <i data-lucide="line-chart" class="w-3 h-3"></i> Updated 2 mins ago
+                    <div class="font-bold text-sm italic uppercase tracking-tight">Stranger</div>
+                    <div id="chat-mode" class="text-[9px] text-indigo-400 font-bold uppercase tracking-widest">Active</div>
                 </div>
             </div>
-
-            <!-- Stats (Side Card) -->
-            <div class="md:col-span-4 bento-card p-10 bg-indigo-900/5">
-                <h3 class="text-xs font-bold text-muted uppercase tracking-[0.3em] mb-12">Engine Stats</h3>
-                <div class="space-y-8">
-                    <div>
-                        <div class="text-4xl font-bold tracking-tighter">1.2s</div>
-                        <div class="text-[9px] font-bold text-muted uppercase tracking-widest mt-1">Avg. Match Time</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold tracking-tighter">14k+</div>
-                        <div class="text-[9px] font-bold text-muted uppercase tracking-widest mt-1">Matches / Day</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Security (Small) -->
-            <div class="md:col-span-4 bento-card p-8">
-                <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-6 border border-white/10 text-indigo-400">
-                    <i data-lucide="shield-check" class="w-5 h-5"></i>
-                </div>
-                <h3 class="font-bold text-sm uppercase tracking-tight mb-2 text-white">End-to-End Privacy</h3>
-                <p class="text-xs text-muted leading-relaxed">Encrypted sessions with zero data retention. Your chat stays between you.</p>
-            </div>
-
-            <!-- Global (Small) -->
-            <div class="md:col-span-4 bento-card p-8">
-                <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-6 border border-white/10 text-emerald-400">
-                    <i data-lucide="globe" class="w-5 h-5"></i>
-                </div>
-                <h3 class="font-bold text-sm uppercase tracking-tight mb-2 text-white">Pan-India Access</h3>
-                <p class="text-xs text-muted leading-relaxed">Optimized servers in Mumbai for low-latency real-time conversations.</p>
-            </div>
-
-            <!-- Account (Small) -->
-            <div class="md:col-span-4 bento-card p-8">
-                <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-6 border border-white/10 text-amber-400">
-                    <i data-lucide="user-plus" class="w-5 h-5"></i>
-                </div>
-                <h3 class="font-bold text-sm uppercase tracking-tight mb-2 text-white">Wavelength Profiles</h3>
-                <p class="text-xs text-muted leading-relaxed">Save your interests and build a permanent circle of trusted friends.</p>
+            <button onclick="disconnectChat()" class="bg-red-500/10 border border-red-500/20 text-red-500 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">Skip</button>
+        </header>
+        <div id="chat-window" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-4 no-scrollbar"></div>
+        <div class="p-4 bg-black border-t border-white/5">
+            <div class="flex gap-3 bg-white/5 p-2 rounded-2xl border border-white/10">
+                <input id="chat-input" type="text" placeholder="Type a message..." class="flex-1 bg-transparent px-4 py-3 outline-none text-sm font-medium text-white">
+                <button onclick="sendMessage()" class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg"><i data-lucide="arrow-up"></i></button>
             </div>
         </div>
+    </section>
 
-        <!-- FOOTER -->
-        <footer class="pt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-white/5">
-            <div class="flex gap-8 text-[9px] font-bold text-muted uppercase tracking-[0.2em]">
-                <a href="#" class="hover:text-white transition-colors">Privacy</a>
-                <a href="#" class="hover:text-white transition-colors">Safety Guidelines</a>
-                <a href="#" class="hover:text-white transition-colors">Terms</a>
-            </div>
-            <p class="text-[9px] font-bold text-muted uppercase tracking-[0.2em]">&copy; 2025 VIBE Labs. All rights reserved.</p>
-        </footer>
-
-    </main>
-
-    <script type="module">
-        import { auth, onAuthStateChanged, logoutUser } from './config.js';
+    <script>
+        // --- FIREBASE INITIALIZATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDjve9Lpih3Tl4mNGn1gxdZ6RQqONs7Bo4",
+            authDomain: "vibe-78d6f.firebaseapp.com",
+            databaseURL: "https://vibe-78d6f-default-rtdb.firebaseio.com",
+            projectId: "vibe-78d6f",
+            storageBucket: "vibe-78d6f.firebasestorage.app",
+            messagingSenderId: "676783066321",
+            appId: "1:676783066321:web:4b9535e39559df464b09f0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
         
-        onAuthStateChanged(auth, (user) => {
-            const actions = document.getElementById('nav-actions');
-            if (user) {
-                actions.innerHTML = `
-                    <a href="social.html" class="text-muted hover:text-white transition-colors"><i data-lucide="users" class="w-5 h-5"></i></a>
-                    <button id="logout-btn" class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500">Logout</button>
-                `;
-                document.getElementById('logout-btn').onclick = logoutUser;
-            }
+        // --- APP STATE ---
+        let myId = localStorage.getItem('vibe_uid') || 'u' + Math.random().toString(36).substr(2, 7);
+        localStorage.setItem('vibe_uid', myId);
+        
+        let interests = [];
+        let prefs = { marital: 'Single', style: 'Deep Talk' };
+        let currentRoom = null;
+        let isMatched = false;
+
+        // --- CORE UI LOGIC ---
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
             lucide.createIcons();
+        }
+
+        // TAG LOGIC
+        const tagInput = document.getElementById('tag-input');
+        tagInput.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter' && tagInput.value.trim()){
+                const val = tagInput.value.trim().toLowerCase();
+                if(!interests.includes(val)){
+                    interests.push(val);
+                    renderTags();
+                }
+                tagInput.value = '';
+            }
         });
 
-        // Dynamic Number Simulation
-        setInterval(() => {
-            const count = 2410 + Math.floor(Math.random() * 15);
-            document.getElementById('live-count').innerText = count.toLocaleString();
-        }, 4000);
+        function renderTags() {
+            const container = document.getElementById('tag-container');
+            container.innerHTML = interests.map(t => `<div class="bg-indigo-600 px-3 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-2">${t} <i data-lucide="x" class="w-3 h-3" onclick="removeTag('${t}')"></i></div>`).join('');
+            document.getElementById('next-to-prefs').disabled = interests.length < 1;
+            lucide.createIcons();
+        }
+
+        window.removeTag = (t) => {
+            interests = interests.filter(i => i !== t);
+            renderTags();
+        }
+
+        function setPref(type, val, btn) {
+            prefs[type] = val;
+            const parent = btn.parentElement.parentElement;
+            parent.querySelectorAll('.pref-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // --- MATCHMAKING LOGIC (ROBUST HANDSHAKE) ---
+        function startMatching() {
+            isMatched = false;
+            currentRoom = null;
+            showScreen('matching');
+
+            const lobbyRef = db.ref('lobby/' + myId);
+            const matchPingRef = db.ref('lobby/' + myId + '/match');
+
+            // 1. Clear any old matches
+            lobbyRef.remove();
+
+            // 2. Add self to lobby
+            lobbyRef.set({ id: myId, interests: interests, status: 'searching', time: Date.now() });
+
+            // 3. Listen for a match assigned to me
+            matchPingRef.on('value', (snap) => {
+                const data = snap.val();
+                if (data && data.roomId && !isMatched) {
+                    isMatched = true;
+                    currentRoom = data.roomId;
+                    matchPingRef.off();
+                    joinChat(data.roomId, data.style);
+                }
+            });
+
+            // 4. Scan lobby for others
+            db.ref('lobby').once('value', (snap) => {
+                const users = snap.val();
+                if (!users) return;
+
+                Object.keys(users).forEach(peerId => {
+                    if (peerId === myId || isMatched) return;
+                    const peer = users[peerId];
+                    if (peer.status !== 'searching') return;
+
+                    const common = peer.interests.filter(i => interests.includes(i));
+                    if (common.length > 0) {
+                        isMatched = true;
+                        const roomId = [myId, peerId].sort().join('_');
+                        currentRoom = roomId;
+
+                        // Handshake: Update both
+                        db.ref('lobby/' + peerId + '/match').set({ roomId, peerId: myId, style: prefs.style });
+                        db.ref('lobby/' + myId + '/match').set({ roomId, peerId: peerId, style: prefs.style });
+                    }
+                });
+            });
+        }
+
+        function cancelSearch() {
+            db.ref('lobby/' + myId).remove();
+            showScreen('landing');
+        }
+
+        // --- CHAT LOGIC ---
+        function joinChat(roomId, style) {
+            showScreen('chat');
+            document.getElementById('chat-mode').innerText = style + " Mode";
+            document.getElementById('chat-window').innerHTML = '';
+            
+            db.ref('lobby/' + myId).remove(); // Out of lobby
+
+            const msgRef = db.ref('rooms/' + roomId + '/messages');
+            msgRef.off();
+            msgRef.on('child_added', (snap) => {
+                const msg = snap.val();
+                addUI(msg.sender === myId ? 'me' : 'stranger', msg.text);
+            });
+
+            // Status Monitor (Skip)
+            db.ref('rooms/' + roomId + '/status').on('value', (snap) => {
+                if (snap.val() === 'ended') {
+                    addUI('system', 'Stranger has left the chat.');
+                    document.getElementById('chat-input').disabled = true;
+                }
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const val = input.value.trim();
+            if (!val || !currentRoom) return;
+
+            db.ref('rooms/' + currentRoom + '/messages').push({
+                sender: myId,
+                text: val,
+                time: Date.now()
+            });
+            input.value = '';
+        }
+
+        function disconnectChat() {
+            if (currentRoom) db.ref('rooms/' + currentRoom + '/status').set('ended');
+            location.reload();
+        }
+
+        function addUI(sender, text) {
+            const box = document.getElementById('chat-window');
+            const div = document.createElement('div');
+            if (sender === 'system') {
+                div.className = "text-center text-[10px] font-bold text-red-500 uppercase py-4 animate-pulse";
+                div.innerText = text;
+            } else {
+                div.className = `max-w-[80%] px-5 py-3 text-sm font-medium ${sender === 'me' ? 'msg-me' : 'msg-them'}`;
+                div.innerText = text;
+            }
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // Event listener for chat enter key
+        document.getElementById('chat-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
 
         lucide.createIcons();
     </script>
