@@ -41,9 +41,7 @@
         import { db, ref, remove } from './config.js'; // Ensure these are imported
         remove(ref(db, `lobby/${myUID}`));
     }
-            // 1. CLEAR matching data as soon as we enter
-            remove(ref(db, `waitlist/${myUID}`));
-            remove(ref(db, `matches/${myUID}`));
+            
 
             if(roomId) {
                 onChildAdded(ref(db, `rooms/${roomId}/messages`), (snap) => {
