@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIBE | Meet on your wavelength</title>
+    <title>VIBE | Wavelength Matching</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,800;1,800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
         :root {
-            --primary: #6366f1;
-            --bg: #030712;
+            --accent: #6366f1;
+            --bg: #020617;
         }
 
         body { 
@@ -19,189 +19,168 @@
             background-color: var(--bg); 
             color: #ffffff; 
             overflow-x: hidden; 
-            -webkit-tap-highlight-color: transparent; 
+            -webkit-tap-highlight-color: transparent;
         }
 
         .screen { display: none; min-height: 100vh; flex-direction: column; }
         .screen.active { display: flex; }
 
-        /* DYNAMIC BACKGROUND */
-        .vibe-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; overflow: hidden; background: #020617;
+        /* Premium Glassmorphism */
+        .glass-nav { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 1.5rem;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);
         }
-        .orb {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4;
-            animation: move 20s infinite alternate;
-        }
-        .orb-1 { width: 400px; height: 400px; background: #4f46e5; top: -10%; left: -10%; }
-        .orb-2 { width: 500px; height: 500px; background: #7c3aed; bottom: -10%; right: -10%; animation-delay: -5s; }
-        .orb-3 { width: 300px; height: 300px; background: #ec4899; top: 40%; left: 30%; animation-delay: -10s; }
-
-        @keyframes move {
-            from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(50px, 100px) scale(1.2); }
-        }
-
-        /* GLASS MORPHISM */
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 2.5rem; }
         
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.5);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Fixed Button Logic */
+        .pref-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
         }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 15px 40px -10px rgba(99, 102, 241, 0.7); }
-        
-        .text-glow { text-shadow: 0 0 30px rgba(168, 85, 247, 0.4); }
+        .pref-btn.active {
+            background: var(--accent);
+            border-color: #818cf8;
+            color: white;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .cta-main {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        @keyframes pulse-slow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #020617 70%); }
     </style>
 </head>
 <body>
 
-    <div class="vibe-canvas">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
+    <div class="bg-glow"></div>
 
-    <!-- PERSISTENT NAVIGATION -->
-    <nav id="nav" class="fixed top-0 w-full z-50 glass border-b border-white/5 h-20 flex items-center justify-between px-6 md:px-12">
+    <!-- NAVBAR -->
+    <nav id="nav" class="fixed top-0 w-full z-50 glass-nav h-16 flex items-center justify-between px-6">
         <div class="flex items-center gap-2 cursor-pointer" onclick="location.reload()">
-            <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
-                <i data-lucide="zap" class="w-6 h-6 fill-current"></i>
+            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                <i data-lucide="zap" class="w-4 h-4 fill-current"></i>
             </div>
-            <span class="text-2xl font-black tracking-tighter italic uppercase">VIBE</span>
+            <span class="text-lg font-extrabold tracking-tighter uppercase italic">VIBE</span>
         </div>
-        <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span id="user-count" class="text-[10px] font-extrabold uppercase tracking-widest text-slate-300">2,410 Online</span>
-            </div>
+        <div class="flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+            <span id="user-count" class="text-[9px] font-bold uppercase tracking-widest text-slate-400">2,410 Live</span>
         </div>
     </nav>
 
-    <!-- 1. LANDING SCREEN -->
-    <section id="landing" class="screen active pt-48 px-6 items-center text-center">
-        <div class="max-w-4xl mx-auto">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em] mb-8">
-                Skip the Small Talk
-            </div>
-            <h1 class="text-7xl md:text-9xl font-black mb-8 tracking-tighter leading-[0.85] text-glow">
-                MEET ON <br/>YOUR <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">WAVELENGTH.</span>
+    <!-- 1. LANDING -->
+    <section id="landing" class="screen active pt-40 px-6 items-center text-center">
+        <div class="max-w-2xl">
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-6 tracking-tighter leading-tight">
+                Meet on your <br/><span class="text-indigo-400 italic">wavelength.</span>
             </h1>
-            <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-xl mx-auto font-medium leading-relaxed">
-                Zero signups. Zero noise. Just real people matching on real interests across India.
+            <p class="text-base text-slate-400 mb-10 max-w-sm mx-auto leading-relaxed">
+                India's interest-based anonymous chat. <br/>Match on vibes, not just random clicks.
             </p>
-            <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
-                <button onclick="window.showScreen('interests')" class="btn-primary text-white px-14 py-6 rounded-3xl font-black text-2xl uppercase tracking-tighter">
-                    Start Vibing
-                </button>
-                <div class="text-slate-500 font-bold uppercase text-[10px] tracking-widest">
-                    Free Forever • Completely Anonymous
-                </div>
-            </div>
-
-            <!-- Preview Badges -->
-            <div class="mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
-                <div class="glass p-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest">#Anime</div>
-                <div class="glass p-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest">#StartupLife</div>
-                <div class="glass p-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest">#DeepTalk</div>
-                <div class="glass p-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest">#Cricket</div>
+            <button onclick="window.showScreen('interests')" class="cta-main text-white px-10 py-4 rounded-2xl font-bold text-lg transition-transform active:scale-95">
+                Start Vibing
+            </button>
+            <div class="mt-12 flex justify-center gap-8 opacity-40 grayscale">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                <i data-lucide="user-check" class="w-5 h-5"></i>
+                <i data-lucide="lock" class="w-5 h-5"></i>
             </div>
         </div>
     </section>
 
-    <!-- 2. INTERESTS SCREEN -->
-    <section id="interests" class="screen pt-32 px-6 items-center">
+    <!-- 2. INTERESTS -->
+    <section id="interests" class="screen pt-28 px-6 items-center">
         <div class="max-w-md w-full">
-            <h2 class="text-5xl font-black mb-4 tracking-tighter uppercase italic">The Setup</h2>
-            <p class="text-slate-400 mb-10 font-medium">What's your current wavelength? Add any interest.</p>
+            <h2 class="text-3xl font-bold mb-2 tracking-tight">Interests</h2>
+            <p class="text-slate-400 mb-8 text-sm">Add at least 1 topic you want to talk about.</p>
             
-            <div class="glass-card p-8 shadow-2xl focus-within:border-indigo-500/50 transition-all">
-                <div id="tag-container" class="flex flex-wrap gap-2 mb-6"></div>
-                <input id="tag-input" type="text" placeholder="Type something..." class="w-full bg-transparent outline-none text-2xl font-bold py-2 text-white placeholder:text-white/10">
+            <div class="glass-card p-5 focus-within:border-indigo-500/50 transition-all">
+                <div id="tag-container" class="flex flex-wrap gap-2 mb-4"></div>
+                <input id="tag-input" type="text" placeholder="Type (F1, Cricket, AI)..." class="w-full bg-transparent outline-none text-lg font-medium py-1 text-white">
             </div>
 
             <div class="fixed bottom-10 left-0 w-full px-6 flex justify-center">
-                <button id="next-to-prefs" disabled onclick="window.showScreen('preferences')" class="max-w-md w-full btn-primary text-white py-6 rounded-[2rem] font-black text-xl uppercase tracking-tighter disabled:opacity-20 disabled:grayscale transition-all">Continue</button>
+                <button id="next-to-prefs" disabled onclick="window.showScreen('preferences')" class="max-w-md w-full cta-main text-white py-4 rounded-2xl font-bold text-lg disabled:opacity-20 transition-all">Continue</button>
             </div>
         </div>
     </section>
 
-    <!-- 3. PREFERENCES SCREEN -->
-    <section id="preferences" class="screen pt-32 px-6 items-center overflow-y-auto pb-32">
+    <!-- 3. PREFERENCES (FIXED) -->
+    <section id="preferences" class="screen pt-28 px-6 items-center overflow-y-auto pb-24">
         <div class="max-w-md w-full">
-            <h2 class="text-5xl font-black mb-8 tracking-tighter uppercase italic">Filters</h2>
+            <h2 class="text-3xl font-bold mb-8 tracking-tight">Fine-tune</h2>
             
             <div class="space-y-6">
                 <!-- MARITAL -->
-                <div class="glass-card p-8">
-                    <label class="text-[10px] font-black text-slate-500 uppercase block mb-6 tracking-[0.2em]">Status</label>
-                    <div class="grid grid-cols-1 gap-3 mb-3">
-                        <button onclick="window.setPref('marital', 'Anyone', this)" class="pref-btn active glass p-5 rounded-2xl font-black text-xs uppercase tracking-widest">Anyone</button>
+                <div class="glass-card p-6">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 tracking-widest">Marital Status</label>
+                    <div class="grid grid-cols-1 gap-2 mb-2">
+                        <button onclick="window.setPref('marital', 'Anyone', this)" class="pref-btn active p-3 rounded-xl font-bold text-xs">Anyone</button>
                     </div>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button onclick="window.setPref('marital', 'Single', this)" class="pref-btn glass p-5 rounded-2xl font-black text-[10px] uppercase">Single</button>
-                        <button onclick="window.setPref('marital', 'Married', this)" class="pref-btn glass p-5 rounded-2xl font-black text-[10px] uppercase">Married</button>
-                        <button onclick="window.setPref('marital', 'Divorced', this)" class="pref-btn glass p-5 rounded-2xl font-black text-[10px] uppercase">Divorced</button>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="window.setPref('marital', 'Single', this)" class="pref-btn p-3 rounded-xl font-bold text-xs">Single</button>
+                        <button onclick="window.setPref('marital', 'Married', this)" class="pref-btn p-3 rounded-xl font-bold text-xs">Married</button>
+                        <button onclick="window.setPref('marital', 'Divorced', this)" class="pref-btn p-3 rounded-xl font-bold text-xs">Divorced</button>
                     </div>
                 </div>
 
                 <!-- STYLE -->
-                <div class="glass-card p-8">
-                    <label class="text-[10px] font-black text-slate-500 uppercase block mb-6 tracking-[0.2em]">Chat Mode</label>
-                    <div class="grid grid-cols-1 gap-3">
-                        <button onclick="window.setPref('style', 'Anything', this)" class="pref-btn active glass p-5 rounded-2xl font-black text-xs uppercase tracking-widest">Anything</button>
-                        <button onclick="window.setPref('style', 'Deep Talk', this)" class="pref-btn glass p-5 rounded-2xl font-black text-xs uppercase tracking-widest">Deep Talk</button>
-                        <button onclick="window.setPref('style', 'Deep Naughty', this)" class="pref-btn glass p-5 rounded-2xl font-black text-xs uppercase tracking-widest">Deep Naughty</button>
+                <div class="glass-card p-6">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-4 tracking-widest">Chat Style</label>
+                    <div class="grid grid-cols-1 gap-2 mb-2">
+                        <button onclick="window.setPref('style', 'Anything', this)" class="pref-btn active p-3 rounded-xl font-bold text-xs">Anything</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="window.setPref('style', 'Deep Talk', this)" class="pref-btn p-3 rounded-xl font-bold text-xs">Deep Talk</button>
+                        <button onclick="window.setPref('style', 'Deep Naughty', this)" class="pref-btn p-3 rounded-xl font-bold text-xs">Deep Naughty</button>
                     </div>
                 </div>
             </div>
 
-            <button onclick="window.startMatching()" class="w-full mt-10 btn-primary text-white py-6 rounded-[2rem] font-black text-2xl uppercase tracking-tighter">Find Match</button>
+            <button onclick="window.startMatching()" class="w-full mt-10 cta-main text-white py-4 rounded-2xl font-bold text-lg">Find My Vibe</button>
         </div>
     </section>
 
-    <!-- 4. MATCHING SCREEN -->
-    <section id="matching" class="screen items-center justify-center text-center p-6 bg-[#030712]">
-        <div class="relative w-64 h-64 flex items-center justify-center mb-12">
-            <div class="absolute inset-0 bg-indigo-500 rounded-full scanner opacity-20"></div>
-            <div class="absolute inset-8 bg-purple-500 rounded-full scanner opacity-10" style="animation-delay: 1.5s"></div>
-            <div class="relative w-32 h-32 bg-indigo-600 rounded-[3rem] flex items-center justify-center shadow-2xl border border-white/10">
-                <i data-lucide="zap" class="w-16 h-16 text-white animate-pulse"></i>
-            </div>
+    <!-- 4. MATCHING -->
+    <section id="matching" class="screen items-center justify-center text-center p-6 bg-[#020617]">
+        <div class="w-20 h-20 bg-indigo-600 rounded-[2rem] flex items-center justify-center mb-8 shadow-2xl animate-pulse">
+            <i data-lucide="compass" class="w-10 h-10 text-white animate-spin [animation-duration:3s]"></i>
         </div>
-        <h2 class="text-4xl font-black mb-4 tracking-tighter italic uppercase">Connecting...</h2>
-        <p class="text-indigo-400 text-[10px] font-black uppercase tracking-[0.5em] animate-pulse">Stay in the moment</p>
+        <h2 class="text-2xl font-bold mb-2">Scanning wavelength...</h2>
+        <p class="text-indigo-400 text-[10px] font-bold uppercase tracking-[0.4em]">Matching in India</p>
     </section>
 
-    <!-- 5. CHAT SCREEN -->
-    <section id="chat" class="screen bg-[#030712]">
-        <div class="flex flex-col h-screen max-w-2xl mx-auto border-x border-white/5 relative bg-[#030712]">
-            <!-- Header -->
-            <div class="p-5 border-b border-white/5 flex items-center justify-between glass sticky top-0 z-20 h-24">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">V</div>
+    <!-- 5. CHAT -->
+    <section id="chat" class="screen bg-[#020617]">
+        <div class="flex flex-col h-screen max-w-2xl mx-auto border-x border-white/5 relative bg-[#020617]">
+            <header class="p-4 border-b border-white/5 flex items-center justify-between glass-nav sticky top-0 z-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold">V</div>
                     <div>
-                        <div class="font-black text-base text-white tracking-tight italic uppercase">Stranger <span class="w-2 h-2 bg-green-500 rounded-full inline-block ml-1 animate-pulse"></span></div>
-                        <div id="mode-label" class="text-[10px] text-indigo-400 font-black uppercase tracking-widest">Active Connection</div>
+                        <div class="font-bold text-sm text-white flex items-center gap-2">Stranger <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span></div>
+                        <div id="mode-label" class="text-[9px] text-indigo-400 font-bold uppercase tracking-widest">Active</div>
                     </div>
                 </div>
-                <button onclick="window.disconnectAndNext()" class="bg-white text-black px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-tighter hover:scale-105 active:scale-95 transition-all">Next</button>
-            </div>
+                <button onclick="window.disconnectAndNext()" class="bg-white text-black px-5 py-2 rounded-xl text-xs font-bold transition-all">Next</button>
+            </header>
 
-            <!-- Messages -->
-            <div id="chat-window" class="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar pb-32"></div>
+            <div id="chat-window" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar"></div>
 
-            <!-- Input -->
-            <div class="p-6 bg-[#030712]/80 backdrop-blur-xl border-t border-white/5 sticky bottom-0">
-                <div id="typing-ui" class="text-[9px] font-black text-indigo-400 mb-3 uppercase hidden tracking-[0.3em] animate-pulse">Stranger is typing...</div>
-                <div class="flex gap-3 bg-white/5 p-2 rounded-[2rem] border border-white/10">
-                    <input id="chat-input" type="text" placeholder="Type a message..." class="flex-1 bg-transparent px-5 py-4 outline-none font-bold text-sm text-white">
-                    <button onclick="window.sendMessage()" class="bg-indigo-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all">
-                        <i data-lucide="arrow-up" class="w-7 h-7"></i>
+            <div class="p-4 bg-[#020617] border-t border-white/5 sticky bottom-0">
+                <div id="typing-ui" class="text-[9px] font-bold text-indigo-400 mb-2 uppercase hidden tracking-widest animate-pulse">Typing...</div>
+                <div class="flex gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/10">
+                    <input id="chat-input" type="text" placeholder="Start typing..." class="flex-1 bg-transparent px-4 py-3 outline-none text-sm text-white">
+                    <button onclick="window.sendMessage()" class="bg-indigo-600 text-white w-12 h-12 rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                        <i data-lucide="arrow-up" class="w-5 h-5"></i>
                     </button>
                 </div>
             </div>
@@ -213,7 +192,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, push, onChildAdded, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- FIREBASE CONFIG ---
+        // CONFIG (Your actual working keys)
         const firebaseConfig = {
             apiKey: "AIzaSyDjve9Lpih3Tl4mNGn1gxdZ6RQqONs7Bo4",
             authDomain: "vibe-78d6f.firebaseapp.com",
@@ -241,6 +220,7 @@
             lucide.createIcons();
         };
 
+        // Interests
         window.addTag = (text) => {
             const val = text.toLowerCase().trim();
             if (!interests.includes(val)) {
@@ -256,11 +236,12 @@
 
         function renderTags() {
             const container = document.getElementById('tag-container');
-            container.innerHTML = interests.map(t => `<div class="flex items-center gap-1.5 bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-tight shadow-lg">${t} <button onclick="window.removeTag('${t}')"><i data-lucide="x" class="w-3 h-3"></i></button></div>`).join('');
+            container.innerHTML = interests.map(t => `<div class="flex items-center gap-1.5 bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">${t} <button onclick="window.removeTag('${t}')"><i data-lucide="x" class="w-3 h-3"></i></button></div>`).join('');
             document.getElementById('next-to-prefs').disabled = interests.length < 1; 
             lucide.createIcons();
         }
 
+        // Prefs Logic (Fixed selector)
         window.setPref = (type, val, btn) => {
             prefs[type] = val;
             const parent = btn.closest('.glass-card');
@@ -268,6 +249,7 @@
             btn.classList.add('active');
         };
 
+        // Matching
         window.startMatching = () => {
             window.showScreen('matching');
             const lobbyRef = ref(db, 'lobby/' + myId);
@@ -280,6 +262,7 @@
                     if (peerId === myId || currentRoom) return;
                     const peer = users[peerId];
                     const common = peer.interests.filter(i => interests.includes(i));
+                    
                     if (common.length > 0) {
                         const roomId = [myId, peerId].sort().join('_');
                         currentRoom = roomId;
@@ -302,7 +285,6 @@
         function startChat(roomId, style) {
             window.showScreen('chat');
             document.getElementById('mode-label').innerText = style + " Mode";
-            document.getElementById('chat-input').disabled = false;
             remove(ref(db, 'lobby/' + myId));
 
             const statusRef = ref(db, 'rooms/' + roomId + '/status');
@@ -312,7 +294,6 @@
             onValue(statusRef, (snap) => {
                 if (snap.val() === 'disconnected') {
                     addSystemMessage("Stranger has left.");
-                    document.getElementById('chat-input').disabled = true;
                 }
             });
 
@@ -337,8 +318,8 @@
         function addMessageUI(sender, text) {
             const box = document.getElementById('chat-window');
             const div = document.createElement('div');
-            div.className = `flex ${sender === 'me' ? 'justify-end' : 'justify-start'} mb-4`;
-            div.innerHTML = `<div class="max-w-[85%] px-6 py-4 rounded-[2rem] text-sm font-bold leading-relaxed ${sender === 'me' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white/5 border border-white/10 text-white rounded-tl-none'}">${text}</div>`;
+            div.className = `flex ${sender === 'me' ? 'justify-end' : 'justify-start'} mb-3`;
+            div.innerHTML = `<div class="max-w-[85%] px-4 py-3 rounded-2xl text-sm font-medium ${sender === 'me' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white/5 border border-white/10 text-slate-200 rounded-tl-none'}">${text}</div>`;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;
         }
@@ -346,7 +327,7 @@
         function addSystemMessage(text) {
             const box = document.getElementById('chat-window');
             const div = document.createElement('div');
-            div.className = "text-center py-6 text-[10px] font-black text-red-500 uppercase tracking-[0.4em]";
+            div.className = "text-center py-6 text-[10px] font-bold text-red-400 uppercase tracking-widest";
             div.innerText = text;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;
@@ -358,13 +339,14 @@
                 e.target.value = '';
             }
         });
+
         document.getElementById('chat-input').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') window.sendMessage();
         });
 
         setInterval(() => {
-            const count = 2410 + Math.floor(Math.random() * 50);
-            document.getElementById('user-count').innerText = count.toLocaleString() + " Online";
+            const count = 2410 + Math.floor(Math.random() * 20);
+            document.getElementById('user-count').innerText = count + " Live";
         }, 3000);
 
         lucide.createIcons();
