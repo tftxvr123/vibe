@@ -1,40 +1,51 @@
 <script type="module">
-    import { db, auth, ref, set, onValue, get, remove, getMyUID } from './config.js';
+    import { db, auth, ref, set, onValue, remove, getMyUID, onAuthStateChanged } from './config.js';
 
-    const myUID = auth.currentUser ? auth.currentUser.uid : getMyUID();
-    const interests = JSON.parse(localStorage.getItem('vibe_interests'));
-    const prefs = JSON.parse(localStorage.getItem('vibe_prefs'));
+    onAuthStateChanged(auth, (user) => {
+        const myUID = user ? user.uid : getMyUID();
+        const interests = JSON.parse(localStorage.getItem('vibe_interests')) || ["General"];
+        const prefs = JSON.parse(localStorage.getItem('vibe_prefs')) || {style: 'Anything'};
 
-    // 1. Join Lobby
-    const lobbyRef = ref(db, 'lobby/' + myUID);
-    set(lobbyRef, { id: myUID, interests, prefs, time: Date.now() });
+        // 1. Join Lobby
+        const lobbyRef = ref(db, 'lobby/' + myUID);
+        set(lobbyRef, { id: myUID, interests, prefs, time: Date.now() });
 
-    // 2. Look for matches
-    onValue(ref(db, 'lobby'), (snap) => {
-        const users = snap.val();
-        if(!users) return;
-        Object.keys(users).forEach(peerId => {
-            if(peerId === myUID) return;
-            const peer = users[peerId];
-            const common = peer.interests.filter(i => interests.includes(i));
-            if(common.length > 0) {
-                const roomId = [myUID, peerId].sort().join('_');
-                // Set match for both
-                set(ref(db, `lobby/${peerId}/match`), { roomId, style: prefs.style, peerUID: myUID });
-                set(ref(db, `lobby/${myUID}/match`), { roomId, style: prefs.style, peerUID: peerId });
-                window.location.href = `chat.html?room=${roomId}&peer=${peerId}&style=${prefs.style}`;
+        // 2. Listen for matches assigned to me (Joiner Path)
+        onValue(ref(db, `lobby/${myUID}/match`), (snap) => {
+            const data = snap.val();
+            if(data) {
+                // Clear lobby and go to chat
+                remove(ref(db, 'lobby/' + myUID));
+                window.location.href = `chat.html?room=${data.roomId}&peer=${data.peerUID}`;
             }
         });
-    });
 
-    // 3. Listen for matches assigned to me
-    onValue(ref(db, `lobby/${myUID}/match`), (snap) => {
-        const data = snap.val();
-        if(data) window.location.href = `chat.html?room=${data.roomId}&peer=${data.peerUID}&style=${data.style}`;
-    });
+        // 3. Scan lobby to find others (Creator Path)
+        onValue(ref(db, 'lobby'), (snap) => {
+            const users = snap.val();
+            if(!users) return;
+            Object.keys(users).forEach(peerId => {
+                if(peerId === myUID) return;
+                const peer = users[peerId];
+                if (peer.match) return; // Already matched
 
-    // Inside match.html <script>
-// When a match is found, ensure the URL looks like this:
-const roomId = [myUID, peerId].sort().join('_');
-window.location.href = `chat.html?room=${roomId}&peer=${peerId}&style=${prefs.style}`;
+                const common = peer.interests.filter(i => interests.includes(i));
+                if(common.length > 0) {
+                    const roomId = [myUID, peerId].sort().join('_');
+                    
+                    // Tell the Peer they matched with ME
+                    set(ref(db, `lobby/${peerId}/match`), { 
+                        roomId: roomId, 
+                        peerUID: myUID 
+                    });
+
+                    // Tell MYSELF I matched with THEM
+                    set(ref(db, `lobby/${myUID}/match`), { 
+                        roomId: roomId, 
+                        peerUID: peerId 
+                    });
+                }
+            });
+        });
+    });
 </script>
