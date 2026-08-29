@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Friends | VIBE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body{background:#020617; color:white; font-family:'Plus Jakarta Sans',sans-serif;}</style>
+</head>
+<body class="p-6 pt-24">
+    <div class="max-w-md mx-auto">
+        <h2 class="text-3xl font-black mb-8 uppercase italic">Your Circle</h2>
+        <div id="list" class="space-y-3">
+            <p class="text-slate-500 text-center py-10 italic">Login to see your friends.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, ref, onValue, get, onAuthStateChanged } from './config.js';
+
+        onAuthStateChanged(auth, (user) => {
+            if(!user) return;
+            onValue(ref(db, `friends/${user.uid}`), (snap) => {
+                const container = document.getElementById('list');
+                container.innerHTML = '';
+                if(!snap.exists()){
+                    container.innerHTML = '<p class="text-slate-500 text-center">No friends added yet.</p>';
+                    return;
+                }
+                Object.keys(snap.val()).forEach(async (fuid) => {
+                    const usnap = await get(ref(db, 'users/' + fuid));
+                    const data = usnap.val();
+                    const div = document.createElement('div');
+                    div.className = "bg-white/5 border border-white/10 p-4 rounded-2xl flex justify-between items-center";
+                    div.innerHTML = `
+                        <div class="font-bold">${data.nickname}</div>
+                        <button onclick="location.href='chat.html?room=${[user.uid, fuid].sort().join('_')}&peer=${fuid}'" class="text-indigo-400 font-bold text-xs uppercase">Chat</button>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
