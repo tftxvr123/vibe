@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Chat | VIBE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body{background:#020617; color:white; font-family:'Plus Jakarta Sans',sans-serif;} .no-scrollbar::-webkit-scrollbar{display:none;}</style>
+</head>
+<body class="flex flex-col h-screen max-w-2xl mx-auto border-x border-white/5 bg-[#020617]">
+    <header class="p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#020617]/80 backdrop-blur-md z-20">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-bold">V</div>
+            <div>
+                <div id="title" class="font-bold text-sm">Stranger</div>
+                <div id="status" class="text-[9px] text-green-500 font-bold uppercase tracking-widest">Active</div>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button id="add-friend" onclick="addFriend()" class="hidden bg-indigo-600/20 text-indigo-400 px-3 py-1.5 rounded-lg text-[9px] font-bold border border-indigo-500/20 uppercase">+ Add</button>
+            <button onclick="location.href='index.html'" class="bg-white text-black px-4 py-2 rounded-xl text-xs font-bold uppercase">Next</button>
+        </div>
+    </header>
+
+    <div id="window" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar"></div>
+
+    <div class="p-4 bg-[#020617] border-t border-white/5">
+        <div id="typing" class="text-[9px] text-indigo-400 mb-2 uppercase hidden animate-pulse">Stranger is typing...</div>
+        <div class="flex gap-2 bg-white/5 p-1 rounded-2xl border border-white/10">
+            <input id="input" type="text" placeholder="Type a message..." class="flex-1 bg-transparent px-4 py-3 outline-none text-sm text-white">
+            <button id="send-btn" class="bg-indigo-600 text-white w-12 h-12 rounded-xl flex items-center justify-center"><i data-lucide="arrow-up" class="w-6 h-6"></i></button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db, auth, ref, push, onChildAdded, onValue, set, get, getMyUID, onAuthStateChanged } from './config.js';
+
+        const params = new URLSearchParams(window.location.search);
+        const roomId = params.get('room');
+        const peerId = params.get('peer');
+        const myUID = auth.currentUser ? auth.currentUser.uid : getMyUID();
+
+        // 1. Connection logic
+        if (roomId) {
+            onChildAdded(ref(db, `rooms/${roomId}/messages`), (snap) => {
+                const msg = snap.val();
+                addUI(msg.sender === myUID ? 'me' : 'stranger', msg.text);
+            });
+
+            // 2. Add Friend Button Visibility
+            onAuthStateChanged(auth, async (user) => {
+                if (user && peerId && !peerId.startsWith('u')) {
+                    const snap = await get(ref(db, `friends/${user.uid}/${peerId}`));
+                    if (!snap.exists()) document.getElementById('add-friend').classList.remove('hidden');
+                }
+            });
+        }
+
+        window.addFriend = async () => {
+            const myId = auth.currentUser.uid;
+            await set(ref(db, `friends/${myId}/${peerId}`), true);
+            await set(ref(db, `friends/${peerId}/${myId}`), true);
+            alert("Friend Added!");
+            document.getElementById('add-friend').classList.add('hidden');
+        };
+
+        document.getElementById('send-btn').onclick = () => {
+            const input = document.getElementById('input');
+            if(!input.value.trim()) return;
+            push(ref(db, `rooms/${roomId}/messages`), { sender: myUID, text: input.value.trim() });
+            input.value = '';
+        };
+
+        function addUI(sender, text) {
+            const box = document.getElementById('window');
+            const div = document.createElement('div');
+            div.className = `flex ${sender === 'me' ? 'justify-end' : 'justify-start'} mb-2`;
+            div.innerHTML = `<div class="max-w-[85%] px-4 py-2 rounded-2xl text-sm ${sender === 'me' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white/5 border border-white/10 text-white rounded-tl-none'}">${text}</div>`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
