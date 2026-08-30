@@ -23,7 +23,7 @@
         .msg-them { background: #1e293b; border-radius: 1.25rem 1.25rem 1.25rem 0; align-self: flex-start; }
         @keyframes scan { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .radar-spin { animation: scan 4s linear infinite; }
-        .disabled-chat { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
+        .btn-skip-active { background: #ef4444 !important; color: #fff !important; font-weight: 900 !important; }
     </style>
 </head>
 <body>
@@ -39,7 +39,7 @@
         </div>
         <div class="flex items-center gap-4">
             <button onclick="showScreen('rooms')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-400 transition-colors">Rooms</button>
-            <div id="auth-status" class="flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+            <div class="flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
                 <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span>
                 <span id="live-counter" class="text-[9px] font-bold uppercase tracking-widest text-slate-400">2,410 Live</span>
             </div>
@@ -70,7 +70,7 @@
 
     <!-- SCREEN: ROOM DIRECTORY -->
     <section id="rooms" class="screen pt-24 px-6 pb-20">
-        <div class="max-w-2xl mx-auto w-full">
+        <div class="max-w-2xl mx-auto w-full text-left">
             <div class="flex items-center gap-4 mb-8">
                 <button onclick="showScreen('landing')" class="text-slate-500 hover:text-white transition-all"><i data-lucide="chevron-left"></i></button>
                 <h2 class="text-3xl font-black uppercase italic">Vibe <span class="text-indigo-500">Rooms</span></h2>
@@ -85,9 +85,9 @@
             <div class="flex items-center justify-between mb-8 sticky top-20 z-30 bg-black/50 backdrop-blur-md py-3 px-4 rounded-2xl border border-white/5 shadow-xl">
                 <button onclick="showScreen('rooms')" class="text-slate-500"><i data-lucide="chevron-left"></i></button>
                 <h2 id="current-room-name" class="text-lg font-black uppercase italic text-indigo-500 tracking-tight">Room Name</h2>
-                <button onclick="openCreatePost()" class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-lg hover:scale-105 active:scale-95 transition-all"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                <button onclick="openCreatePost()" class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-lg hover:scale-105 transition-all"><i data-lucide="plus" class="w-5 h-5"></i></button>
             </div>
-            <div id="posts-container" class="space-y-6"></div>
+            <div id="posts-container" class="space-y-6 text-left"></div>
         </div>
     </section>
 
@@ -98,7 +98,7 @@
                 <button onclick="showScreen('landing')" class="text-slate-500"><i data-lucide="chevron-left"></i></button>
                 <h2 class="text-3xl font-bold uppercase italic">Interests</h2>
             </div>
-            <div class="glass-card p-6 mb-8"><div id="tag-container" class="flex flex-wrap gap-2 mb-4"></div><input id="tag-input" type="text" placeholder="Add interest..." class="w-full bg-transparent outline-none text-xl text-white"></div>
+            <div class="glass-card p-6 mb-8"><div id="tag-container" class="flex flex-wrap gap-2 mb-4 text-left"></div><input id="tag-input" type="text" placeholder="Add interest..." class="w-full bg-transparent outline-none text-xl text-white"></div>
             <button id="next-to-prefs" disabled onclick="showScreen('preferences')" class="w-full bg-indigo-600 py-5 rounded-2xl font-black text-lg uppercase shadow-xl disabled:opacity-10 transition-all">Continue</button>
         </div>
     </section>
@@ -130,12 +130,17 @@
         <button onclick="location.reload()" class="mt-20 px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:text-red-400">Cancel Search</button>
     </section>
 
-    <!-- (FIXED) CHAT SCREEN WITH SKIP LOGIC -->
+    <!-- (FIXED) CHAT SCREEN WITH VISIBLE SKIP BUTTON -->
     <section id="chat" class="screen bg-black">
-        <header class="h-20 border-b border-white/5 flex items-center justify-between px-6 glass-nav sticky top-0 z-20">
-            <div class="flex items-center gap-3"><div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-xs text-white uppercase">V</div><div class="font-bold text-sm italic text-white" id="chat-pref">Stranger</div></div>
-            <!-- SKIP BUTTON -->
-            <button onclick="skipChat()" class="bg-red-500/10 border border-red-500/20 text-red-500 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">Skip</button>
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-6 bg-black/80 backdrop-blur-xl sticky top-0 z-20">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-xs text-white uppercase">V</div>
+                <div class="font-bold text-sm italic text-white" id="chat-pref">Stranger</div>
+            </div>
+            <!-- VISIBLE BOLD SKIP BUTTON -->
+            <button onclick="skipChat()" class="btn-skip-active px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 active:scale-95 transition-all">
+                SKIP CHAT
+            </button>
         </header>
         <div id="chat-window" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-3 no-scrollbar pb-32"></div>
         <div class="p-4 bg-black border-t border-white/5 absolute bottom-0 w-full">
@@ -164,11 +169,10 @@
             lucide.createIcons();
         };
 
-        // --- ROOMS & COMMUNITY logic (Preserved) ---
         const VIBE_ROOMS = ['Married & Curious', 'Couples', 'First Experiences', 'Open Relationships', 'Dating & Connection', 'Fantasy & Roleplay', 'Relationship Advice', 'Experiences', 'Questions & Discussions'];
         function renderRoomDirectory() {
             const container = document.getElementById('room-list');
-            container.innerHTML = VIBE_ROOMS.map(room => `<div class="glass-card p-6 flex justify-between items-center hover:border-indigo-500/50 transition-all cursor-pointer" onclick="enterRoom('${room}')"><h3 class="font-bold text-sm uppercase italic tracking-tight">${room}</h3><i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i></div>`).join('');
+            container.innerHTML = VIBE_ROOMS.map(room => `<div class="glass-card p-6 flex justify-between items-center hover:border-indigo-500/50 transition-all cursor-pointer" onclick="enterRoom('${room}')"><h3 class="font-bold text-sm uppercase italic tracking-tight text-white">${room}</h3><i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i></div>`).join('');
             lucide.createIcons();
         }
         window.enterRoom = (roomName) => { activeRoomName = roomName; document.getElementById('current-room-name').innerText = roomName; showScreen('room-feed'); loadRoomPosts(roomName); };
@@ -186,7 +190,6 @@
             });
         }
 
-        // --- MATCHMAKING ENGINE ---
         window.startMatching = () => {
             currentRoom = null;
             showScreen('matching');
@@ -223,17 +226,13 @@
             });
         };
 
-        // --- CHAT & DISCONNECT Logic ---
         function joinChat(roomId, style) {
             currentRoom = roomId;
             showScreen('chat');
             document.getElementById('chat-pref').innerText = style + " Mode";
             document.getElementById('chat-window').innerHTML = '';
-            
-            // Re-enable chat elements
             document.getElementById('chat-input').disabled = false;
-            document.getElementById('chat-composer-container').classList.remove('disabled-chat');
-
+            
             const msgRef = db.ref(`rooms/${roomId}/messages`);
             msgRef.off();
             msgRef.on('child_added', (snap) => {
@@ -241,26 +240,18 @@
                 addUI(msg.sender === myId ? 'me' : 'stranger', msg.text);
             });
 
-            // CRITICAL: DISCONNECT LISTENER
             const statusRef = db.ref(`rooms/${roomId}/status`);
             statusRef.on('value', (snap) => {
                 if (snap.val() === 'ended') {
                     addUI('system', 'Stranger has left the wavelength.');
-                    // Lockdown the UI
                     document.getElementById('chat-input').disabled = true;
-                    document.getElementById('chat-composer-container').classList.add('disabled-chat');
-                    statusRef.off();
                 }
             });
         }
 
         window.skipChat = () => {
-            if (currentRoom) {
-                // Update database so other user knows
-                db.ref(`rooms/${currentRoom}/status`).set('ended');
-            }
-            // Small delay to ensure DB write before reload
-            setTimeout(() => location.reload(), 100);
+            if (currentRoom) db.ref(`rooms/${currentRoom}/status`).set('ended');
+            setTimeout(() => location.reload(), 150);
         };
 
         window.sendMessage = () => {
@@ -285,7 +276,6 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // --- OTHER UTILS ---
         const tagInput = document.getElementById('tag-input');
         tagInput.addEventListener('keydown', (e) => { if(e.key === 'Enter' && tagInput.value.trim()){ const val = tagInput.value.trim().toLowerCase(); if(!interests.includes(val)){ interests.push(val); renderTags(); } tagInput.value = ''; } });
         function renderTags() { const container = document.getElementById('tag-container'); container.innerHTML = interests.map(t => `<div class="bg-indigo-600 px-3 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-2">${t} <i data-lucide="x" class="w-3 h-3 cursor-pointer" onclick="removeTag('${t}')"></i></div>`).join(''); document.getElementById('next-to-prefs').disabled = interests.length < 1; lucide.createIcons(); }
