@@ -17,28 +17,14 @@
         .screen.active { display: flex; }
         .pro-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #000 85%); }
         .noise { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; opacity: 0.05; pointer-events: none; background-image: url('https://grainy-gradients.vercel.app/noise.svg'); }
-        
-        .glass-card { 
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 2rem;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);
-        }
-
-        .pref-btn { 
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); 
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 1.25rem; 
-            font-weight: 700; font-size: 10px; text-transform: uppercase; color: #94a3b8;
-        }
-        .pref-btn.active { 
-            background: #6366f1; border-color: #818cf8; color: white; 
-            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4); transform: translateY(-1px);
-        }
-
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 2rem; }
         .msg-me { background: #6366f1; border-radius: 1.25rem 1.25rem 0 1.25rem; align-self: flex-end; }
         .msg-them { background: #1e293b; border-radius: 1.25rem 1.25rem 1.25rem 0; align-self: flex-start; }
         @keyframes scan { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .radar-spin { animation: scan 4s linear infinite; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .pref-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); transition: 0.3s; border-radius: 1.25rem; font-weight: 700; font-size: 10px; text-transform: uppercase; color: #94a3b8; }
+        .pref-btn.active { background: #6366f1; border-color: #818cf8; color: white; box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4); }
     </style>
 </head>
 <body>
@@ -46,17 +32,16 @@
     <div class="pro-bg"></div>
     <div class="noise"></div>
 
-    <!-- NAV -->
-    <nav id="top-nav" class="fixed top-0 w-full z-50 h-16 border-b border-white/5 bg-black/50 backdrop-blur-md flex items-center justify-between px-6">
+    <!-- PERSISTENT NAV -->
+    <nav id="top-nav" class="fixed top-0 w-full z-50 h-16 border-b border-white/5 bg-black/50 backdrop-blur-md flex items-center justify-between px-4 md:px-12">
         <div class="flex items-center gap-2 cursor-pointer" onclick="location.reload()">
             <div class="w-7 h-7 bg-indigo-600 rounded flex items-center justify-center text-white shadow-lg"><i data-lucide="zap" class="w-4 h-4 fill-current"></i></div>
             <span class="text-lg font-bold tracking-tighter uppercase italic text-white">VIBE</span>
         </div>
-        <div class="flex items-center gap-4">
-            <button onclick="showScreen('rooms')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-400 transition-colors">Rooms</button>
-            <div class="flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
-                <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span>
-                <span id="live-counter" class="text-[9px] font-bold uppercase tracking-widest text-slate-400">2,410 Live</span>
+        <div class="flex items-center gap-3">
+            <button onclick="showScreen('rooms')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-400">Rooms</button>
+            <div id="nav-auth-area" class="flex items-center gap-2">
+                <!-- Google Login Button Injected Here -->
             </div>
         </div>
     </nav>
@@ -97,81 +82,16 @@
     <!-- SCREEN: ROOM FEED -->
     <section id="room-feed" class="screen pt-20 px-6 pb-24">
         <div class="max-w-2xl mx-auto w-full">
-            <div class="flex items-center justify-between mb-8 sticky top-20 z-30 bg-black/50 backdrop-blur-md py-3 px-4 rounded-2xl border border-white/5">
+            <div class="flex items-center justify-between mb-8 sticky top-20 z-30 bg-black/50 backdrop-blur-md py-3 px-4 rounded-2xl border border-white/5 shadow-xl">
                 <button onclick="showScreen('rooms')" class="text-slate-500"><i data-lucide="chevron-left"></i></button>
                 <h2 id="current-room-name" class="text-lg font-black uppercase italic text-indigo-500 tracking-tight">Room Name</h2>
-                <button onclick="openCreatePost()" class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-lg shadow-indigo-500/20"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                <button onclick="openCreatePost()" class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-lg"><i data-lucide="plus" class="w-5 h-5"></i></button>
             </div>
             <div id="posts-container" class="space-y-6 text-left"></div>
         </div>
     </section>
 
-    <!-- SCREEN: INTERESTS -->
-    <section id="interests" class="screen pt-28 px-6 items-center">
-        <div class="max-w-md w-full">
-            <div class="flex items-center gap-4 mb-12">
-                <button onclick="showScreen('landing')" class="w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-all"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
-                <div class="flex-1 text-center"><h2 class="text-3xl font-black uppercase italic tracking-tighter">Wavelength</h2></div>
-            </div>
-            <div class="glass-card p-6 mb-8"><div id="tag-container" class="flex flex-wrap gap-2 mb-4"></div><input id="tag-input" type="text" placeholder="Add interest..." class="w-full bg-transparent outline-none text-xl text-white"></div>
-            <button id="next-to-prefs" disabled onclick="showScreen('preferences')" class="w-full bg-indigo-600 py-5 rounded-2xl font-black text-lg uppercase shadow-xl disabled:opacity-10">Continue</button>
-        </div>
-    </section>
-
-    <!-- SCREEN: PREFERENCES (RE-DESIGNED FILTERS) -->
-    <section id="preferences" class="screen pt-28 px-6 items-center pb-20">
-        <div class="max-w-lg w-full">
-            <div class="flex items-center gap-4 mb-10">
-                <button onclick="showScreen('interests')" class="w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-all"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
-                <div class="flex-1 text-center"><h2 class="text-3xl font-black uppercase italic tracking-tighter text-white">Filters</h2></div>
-            </div>
-            <div class="space-y-4">
-                <div class="glass-card p-8">
-                    <div class="flex items-center gap-2 mb-6"><i data-lucide="user" class="w-3.5 h-3.5 text-indigo-400"></i><label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Identify Yourself</label></div>
-                    <div class="grid grid-cols-1 gap-3 mb-6">
-                        <button onclick="setPref('marital', 'Married', this)" class="pref-btn active p-5 flex items-center justify-between group">
-                            <span class="flex items-center gap-3"><i data-lucide="heart" class="w-4 h-4 opacity-40"></i> Married</span>
-                            <i data-lucide="check-circle-2" class="w-4 h-4 opacity-0 group-[.active]:opacity-100"></i>
-                        </button>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button onclick="setPref('marital', 'Single', this)" class="pref-btn p-4 flex items-center gap-3"><i data-lucide="user" class="w-4 h-4 opacity-40"></i> Single</button>
-                            <button onclick="setPref('marital', 'Divorced', this)" class="pref-btn p-4 flex items-center gap-3"><i data-lucide="unlock" class="w-4 h-4 opacity-40"></i> Divorced</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card p-8">
-                    <div class="flex items-center gap-2 mb-6"><i data-lucide="message-square" class="w-3.5 h-3.5 text-indigo-400"></i><label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Interaction Mode</label></div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="setPref('style', 'Deep Talk', this)" class="pref-btn active p-4">Deep Talk</button>
-                        <button onclick="setPref('style', 'Deep Naughty', this)" class="pref-btn p-4">Exploratory</button>
-                    </div>
-                </div>
-            </div>
-            <button onclick="startMatching()" class="w-full mt-10 bg-indigo-600 text-white py-5 rounded-2xl font-black text-lg uppercase shadow-xl">Scan Wavelength</button>
-        </div>
-    </section>
-
-    <!-- SCREEN: MATCHING (RADAR) -->
-    <section id="matching" class="screen items-center justify-center bg-black text-center p-6">
-        <div class="relative w-56 h-56 flex items-center justify-center mb-12">
-            <div class="absolute inset-0 border border-indigo-500/20 rounded-full radar-spin"></div>
-            <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center animate-pulse"><i data-lucide="compass" class="w-8 h-8 text-white"></i></div>
-        </div>
-        <h2 class="text-3xl font-bold italic uppercase tracking-tighter text-white">Scanning...</h2>
-        <button onclick="cancelMatch()" class="mt-20 px-10 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-600/20">Cancel Search</button>
-    </section>
-
-    <!-- SCREEN: CHAT -->
-    <section id="chat" class="screen bg-black">
-        <header class="h-20 border-b border-white/5 flex items-center justify-between px-6 glass-nav sticky top-0 z-20">
-            <div class="flex items-center gap-3"><div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-xs text-white uppercase shadow-lg">V</div><div class="font-bold text-sm italic text-white" id="chat-pref">Stranger</div></div>
-            <button onclick="skipChat()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-600/30">Skip</button>
-        </header>
-        <div id="chat-window" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-3 no-scrollbar pb-32"></div>
-        <div class="p-4 bg-black border-t border-white/5 absolute bottom-0 w-full"><div class="max-w-2xl mx-auto flex gap-3 bg-white/5 p-2 rounded-2xl border border-white/10"><input id="chat-input" type="text" placeholder="Send a message..." class="flex-1 bg-transparent px-4 py-3 outline-none text-sm text-white font-medium"><button onclick="sendMessage()" class="bg-indigo-600 text-white w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"><i data-lucide="arrow-up" class="w-5 h-5"></i></button></div></div>
-    </section>
-
-    <!-- MODAL: CREATE POST -->
+    <!-- MODALS -->
     <div id="post-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-6">
         <div class="glass-card p-8 w-full max-w-md border-indigo-500/30">
             <h3 id="room-prompt" class="text-lg font-bold italic leading-snug mb-6 text-white text-center">...</h3>
@@ -183,14 +103,45 @@
         </div>
     </div>
 
-    <!-- MODAL: LOGIN PROMPT -->
-    <div id="login-modal" class="fixed inset-0 z-[110] bg-black/95 backdrop-blur-md hidden flex flex-col items-center justify-center p-8 text-center">
-        <div class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center mb-6 shadow-2xl"><i data-lucide="user-plus" class="w-10 h-10"></i></div>
-        <h2 class="text-3xl font-black italic uppercase mb-2 text-white">Member Only</h2>
-        <p class="text-slate-400 mb-8 max-w-xs">You need to be logged in to join the discussion.</p>
-        <button onclick="location.reload()" class="bg-white text-black px-10 py-4 rounded-xl font-bold uppercase text-xs tracking-widest hover:bg-indigo-600 hover:text-white transition-all">Login / Sign Up</button>
-        <button onclick="closeLoginModal()" class="mt-6 text-slate-600 font-bold uppercase text-[10px]">Maybe later</button>
-    </div>
+    <!-- PRESERVED ENGINE -->
+    <section id="interests" class="screen pt-28 px-6 items-center">
+        <div class="max-w-md w-full">
+            <div class="flex items-center gap-4 mb-8 justify-center"><button onclick="showScreen('landing')" class="text-slate-500"><i data-lucide="arrow-left" class="w-4 h-4"></i></button><h2 class="text-3xl font-bold uppercase italic">Interests</h2></div>
+            <div class="glass-card p-6 mb-8"><div id="tag-container" class="flex flex-wrap gap-2 mb-4 text-left"></div><input id="tag-input" type="text" placeholder="Add interest..." class="w-full bg-transparent outline-none text-xl text-white"></div>
+            <button id="next-to-prefs" disabled onclick="showScreen('preferences')" class="w-full bg-indigo-600 py-5 rounded-2xl font-black text-lg uppercase shadow-xl disabled:opacity-10 transition-all">Continue</button>
+        </div>
+    </section>
+
+    <section id="preferences" class="screen pt-28 px-6 items-center pb-20">
+        <div class="max-w-lg w-full space-y-4">
+            <div class="flex items-center gap-4 mb-8 justify-center"><button onclick="showScreen('interests')" class="text-slate-500"><i data-lucide="arrow-left" class="w-4 h-4"></i></button><h2 class="text-3xl font-bold uppercase italic text-white text-center">Filters</h2></div>
+            <div class="glass-card p-8">
+                <div class="grid grid-cols-1 gap-3 mb-6">
+                    <button onclick="setPref('marital', 'Married', this)" class="pref-btn active p-5 flex items-center justify-between"><span>Married</span><i data-lucide="heart" class="w-4 h-4"></i></button>
+                    <div class="grid grid-cols-2 gap-3"><button onclick="setPref('marital', 'Single', this)" class="pref-btn p-4">Single</button><button onclick="setPref('marital', 'Divorced', this)" class="pref-btn p-4">Divorced</button></div>
+                </div>
+            </div>
+            <button onclick="startMatching()" class="w-full mt-10 bg-indigo-600 text-white py-5 rounded-2xl font-black text-lg uppercase shadow-xl">Scan Wavelength</button>
+        </div>
+    </section>
+
+    <section id="matching" class="screen items-center justify-center bg-black text-center p-6">
+        <div class="relative w-56 h-56 flex items-center justify-center mb-12">
+            <div class="absolute inset-0 border border-indigo-500/20 rounded-full radar-spin"></div>
+            <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center animate-pulse"><i data-lucide="compass" class="w-8 h-8 text-white"></i></div>
+        </div>
+        <h2 class="text-3xl font-bold italic uppercase tracking-tighter text-white">Scanning...</h2>
+        <button onclick="cancelMatch()" class="mt-20 px-10 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg">Cancel Search</button>
+    </section>
+
+    <section id="chat" class="screen bg-black">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-6 glass-nav sticky top-0 z-20">
+            <div class="flex items-center gap-3"><div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-xs text-white uppercase shadow-lg">V</div><div class="font-bold text-sm italic text-white" id="chat-pref">Stranger</div></div>
+            <button onclick="skipChat()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg">Skip</button>
+        </header>
+        <div id="chat-window" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-3 no-scrollbar pb-32"></div>
+        <div class="p-4 bg-black border-t border-white/5 absolute bottom-0 w-full"><div class="max-w-2xl mx-auto flex gap-3 bg-white/5 p-2 rounded-2xl border border-white/10"><input id="chat-input" type="text" placeholder="Type a message..." class="flex-1 bg-transparent px-4 py-3 outline-none text-sm text-white"><button onclick="sendMessage()" class="bg-indigo-600 text-white w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"><i data-lucide="arrow-up" class="w-5 h-5"></i></button></div></div>
+    </section>
 
     <script>
         const ADMIN_UID = "YOUR_UID_HERE"; 
@@ -205,21 +156,31 @@
 
         const MOCK_ROOM_DATA = {
             'Married & Curious': [{ text: "Why is it that my husband's best friend is starting to look so attractive lately? Is this just a phase?", likes: 42 }, { text: "Is there a safe way to explore curiosity without breaking trust?", likes: 18 }],
-            'Couples': [{ text: "We tried a lifestyle club last weekend. Mumbai has some wild hidden spots!", likes: 56 }, { text: "Logistics check: How do you guys manage shared social circle date nights?", likes: 23 }],
-            'Relationship Advice': [{ text: "How do you handle it when you want deep talks but your partner wants casual vibes?", likes: 89 }],
-            'Experiences': [{ text: "Met someone on Vibe from Kochi today and we talked for 4 hours. Best match yet.", likes: 112 }],
-            'Fantasy & Roleplay': [{ text: "What's a scenario you've always wanted to explore?", likes: 67 }],
             'default': [{ text: "Does anyone else feel like the best conversations happen after midnight?", likes: 12 }]
         };
 
-        const ROOM_PROMPTS = { 'Married & Curious': "What are you curious about but haven't talked about openly?", 'Relationship Advice': "What's something you're currently trying to figure out?", 'Questions & Discussions': "Ask the community something you've always wondered about.", 'Fantasy & Roleplay': "What's a scenario you've always wanted to explore?", 'default': "Share your thoughts with the community..." };
+        const ROOM_PROMPTS = { 'Married & Curious': "What are you curious about but haven't talked about openly?", 'Relationship Advice': "What's something you're currently trying to figure out?", 'default': "Share your thoughts with the community..." };
 
+        // --- AUTH LOGIC ---
         auth.onAuthStateChanged(user => {
+            const authArea = document.getElementById('nav-auth-area');
             if (user && !user.isAnonymous) {
                 myId = user.uid; isLogged = true;
-                db.ref(`users/${myId}`).once('value', snap => { if(snap.val()) myNick = snap.val().nickname || "Viber"; });
-            } else { myId = user ? user.uid : null; isLogged = false; }
+                myNick = user.displayName || "Viber";
+                authArea.innerHTML = `<span class="text-[9px] font-bold text-slate-500 uppercase mr-2">${myNick.split(' ')[0]}</span><button onclick="logout()" class="text-[9px] font-black text-red-500 uppercase">Logout</button>`;
+            } else {
+                myId = user ? user.uid : null; isLogged = false;
+                authArea.innerHTML = `<button onclick="login()" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest">Sign In</button>`;
+                if(!user) auth.signInAnonymously();
+            }
         });
+
+        window.login = () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(e => alert(e.message));
+        };
+
+        window.logout = () => auth.signOut().then(() => location.reload());
 
         window.showScreen = (id) => {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -231,25 +192,14 @@
 
         function renderRoomDirectory() {
             const container = document.getElementById('room-list');
-            container.innerHTML = VIBE_ROOMS.map(room => `
-                <div class="glass-card p-6 flex justify-between items-center hover:border-indigo-500/50 transition-all cursor-pointer" onclick="enterRoom('${room}')">
-                    <h3 class="font-bold text-sm uppercase italic tracking-tight text-white">${room}</h3>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
-                </div>
-            `).join('');
+            container.innerHTML = VIBE_ROOMS.map(room => `<div class="glass-card p-6 flex justify-between items-center hover:border-indigo-500/50 cursor-pointer" onclick="enterRoom('${room}')"><h3 class="font-bold text-sm uppercase italic tracking-tight text-white">${room}</h3><i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i></div>`).join('');
             lucide.createIcons();
         }
 
-        window.enterRoom = (roomName) => {
-            activeRoomName = roomName;
-            document.getElementById('current-room-name').innerText = roomName;
-            showScreen('room-feed');
-            loadRoomPosts(roomName);
-        };
+        window.enterRoom = (roomName) => { activeRoomName = roomName; document.getElementById('current-room-name').innerText = roomName; showScreen('room-feed'); loadRoomPosts(roomName); };
 
         function loadRoomPosts(roomName) {
-            const container = document.getElementById('posts-container');
-            container.innerHTML = '';
+            const container = document.getElementById('posts-container'); container.innerHTML = '';
             const mocks = MOCK_ROOM_DATA[roomName] || MOCK_ROOM_DATA['default'];
             mocks.forEach((m, index) => renderSinglePost(m, true, `mock-${index}`));
 
@@ -263,7 +213,6 @@
 
         function renderSinglePost(p, isMock, id) {
             const container = document.getElementById('posts-container');
-            const isAdmin = (myId === ADMIN_UID);
             const div = document.createElement('div');
             div.className = `glass-card p-5 space-y-4 ${isMock ? 'border-indigo-500/20' : 'real-post'}`;
             div.innerHTML = `
@@ -274,7 +223,6 @@
                         <button onclick="${isMock ? '' : `reactPost('${id}')`}" class="flex items-center gap-1.5 text-[9px] font-bold text-slate-500 hover:text-indigo-400 transition-all"><i data-lucide="heart" class="w-3.5 h-3.5"></i> ${p.likes || 0}</button>
                         <button onclick="toggleComments('${id}')" class="flex items-center gap-1.5 text-[9px] font-bold text-slate-500 hover:text-indigo-400 transition-all"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Discussion</button>
                     </div>
-                    ${isAdmin && !isMock ? `<button onclick="adminDeletePost('${id}')" class="text-red-500 font-black text-[9px] uppercase tracking-widest bg-red-500/10 px-2 py-1 rounded">Delete</button>` : `<button onclick="alert('Reported')" class="text-[9px] text-slate-600 font-bold uppercase">Report</button>`}
                 </div>
                 <div id="comments-${id}" class="hidden space-y-3 pt-4 border-t border-white/5">
                     <div class="comments-list space-y-2" id="list-${id}"></div>
@@ -283,7 +231,12 @@
                             <input id="input-${id}" type="text" placeholder="Comment..." class="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs outline-none text-white focus:border-indigo-500">
                             <button onclick="submitComment('${id}')" class="bg-indigo-600 px-3 py-2 rounded-lg text-[9px] font-black uppercase">Send</button>
                         </div>
-                    ` : `<div onclick="openLoginModal()" class="cursor-pointer bg-white/5 p-3 rounded-xl text-[8px] text-slate-500 uppercase text-center italic">Login to comment</div>`}
+                    ` : `
+                        <button onclick="login()" class="w-full bg-white/5 border border-dashed border-white/10 p-3 rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all">
+                            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-3 h-3">
+                            <span class="text-[8px] text-slate-400 uppercase font-black tracking-widest">Sign in with Google to Comment</span>
+                        </button>
+                    `}
                 </div>
             `;
             container.insertAdjacentElement(isMock ? 'beforeend' : 'afterbegin', div);
@@ -311,14 +264,8 @@
             input.value = '';
         };
 
-        window.adminDeletePost = (id) => { if(confirm("Delete?")) db.ref(`room_posts/${activeRoomName}/${id}`).remove(); };
-        window.adminDeleteComment = (pid, cid) => { if(confirm("Delete?")) db.ref(`room_posts/${activeRoomName}/${pid}/comments/${cid}`).remove(); };
-        window.reactPost = (postId) => db.ref(`room_posts/${activeRoomName}/${postId}/likes`).transaction(c => (c || 0) + 1);
-
-        window.openCreatePost = () => { if(!isLogged) { openLoginModal(); return; } const prompt = ROOM_PROMPTS[activeRoomName] || ROOM_PROMPTS['default']; document.getElementById('room-prompt').innerText = prompt; document.getElementById('post-modal').classList.remove('hidden'); };
+        window.openCreatePost = () => { if(!isLogged) { login(); return; } const prompt = ROOM_PROMPTS[activeRoomName] || ROOM_PROMPTS['default']; document.getElementById('room-prompt').innerText = prompt; document.getElementById('post-modal').classList.remove('hidden'); };
         window.closeCreatePost = () => document.getElementById('post-modal').classList.add('hidden');
-        window.openLoginModal = () => document.getElementById('login-modal').classList.remove('hidden');
-        window.closeLoginModal = () => document.getElementById('login-modal').classList.add('hidden');
         window.submitPost = () => {
             const text = document.getElementById('post-text').value.trim(); if (!text) return;
             db.ref(`room_posts/${activeRoomName}`).push({ uid: myId, text: text, time: firebase.database.ServerValue.TIMESTAMP, likes: 0 });
@@ -341,17 +288,15 @@
                 } else { db.ref('queue').child(myId).set({ interests, time: Date.now() }); }
             });
         };
-
         function joinChat(roomId, style) {
             currentRoom = roomId; showScreen('chat'); document.getElementById('chat-pref').innerText = style + " Mode"; document.getElementById('chat-window').innerHTML = ''; document.getElementById('chat-input').disabled = false;
             const msgRef = db.ref(`rooms/${roomId}/messages`); msgRef.off(); msgRef.on('child_added', (snap) => { addUI(snap.val().sender === myId ? 'me' : 'stranger', snap.val().text); });
             const statusRef = db.ref(`rooms/${roomId}/status`); statusRef.on('value', (snap) => { if (snap.val() === 'ended') { addUI('system', 'Stranger has left the wavelength.'); document.getElementById('chat-input').disabled = true; } });
         }
-
         window.sendMessage = () => { const input = document.getElementById('chat-input'); const val = input.value.trim(); if (!val || !currentRoom) return; db.ref(`rooms/${currentRoom}/messages`).push({ sender: myId, text: val }); input.value = ''; };
         function addUI(sender, text) {
             const box = document.getElementById('chat-window'); const div = document.createElement('div');
-            if (sender === 'system') { div.className = "flex flex-col items-center py-10 w-full"; div.innerHTML = `<div class="text-[9px] font-bold text-red-500 uppercase tracking-widest animate-pulse">${text}</div><button onclick="location.reload()" class="mt-4 bg-white text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">Find New</button>`; }
+            if (sender === 'system') { div.className = "flex flex-col items-center py-10 w-full"; div.innerHTML = `<div class="text-[9px] font-bold text-red-500 uppercase tracking-widest animate-pulse">Session Terminated</div><button onclick="location.reload()" class="mt-4 bg-white text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">Find New</button>`; }
             else { div.className = `max-w-[85%] px-4 py-2.5 text-sm font-medium ${sender === 'me' ? 'msg-me shadow-lg' : 'msg-them shadow-sm'}`; div.innerText = text; }
             box.appendChild(div); box.scrollTop = box.scrollHeight;
         }
